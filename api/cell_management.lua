@@ -1,5 +1,6 @@
 pushabilitySheet = {}
 moddedMovers = {}
+moddedBombs = {}
 cellLabels = {}
 
 function getCellLabelById(id)
@@ -21,7 +22,7 @@ function getCellLabel(x, y)
   return getCellLabelById(id)
 end
 
-function addCell(label, texture, push, isMover)
+function addCell(label, texture, push, type)
   if label == "vanilla" or label == "unknown" then
     error("Invalid label for custom cell")
   end
@@ -30,8 +31,12 @@ function addCell(label, texture, push, isMover)
   listorder[#listorder+1] = cellID
   pushabilitySheet[cellID] = push
   cellLabels[cellID] = label
-  if isMover == true then
-    moddedMovers[cellID] = isMover
+  type = type or "normal"
+  if type == "mover" then
+    moddedMovers[cellID] = true
+  end
+  if type == "enemy" then
+    moddedBombs[cellID] = true
   end
   for k,v in pairs(tex) do
     texsize[k] = {}

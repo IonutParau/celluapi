@@ -1000,7 +1000,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 			moddedCanPush = canPushCell(cx, cy, prevx, prevy)
 		end
 		if checkedtype == 1 or checkedtype == 13 or checkedtype == 27 or checkedtype == 41 then
-			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23) then
+			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				break
 			else
 				if not pushingdiverger then	--any force towards the mover would go into the diverger so it doesnt count (also it makes some interactions symmetrical-er)
@@ -1031,7 +1031,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		or checkedtype == 52 and (direction ~= checkedrot and direction ~= (checkedrot-1)%4)
 		or checkedtype == 53 and direction == (checkedrot+2)%4
 		or checkedtype > initialCellCount and not canPushCell(cx, cy, prevx, prevy) then
-			if checkedtype ~= -1 and checkedtype ~= 40 and reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23) then
+			if checkedtype ~= -1 and checkedtype ~= 40 and reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				break
 			else
 				totalforce = 0
@@ -1058,10 +1058,10 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 			else
 				totalforce = 0
 			end
-		elseif not lastprot and (checkedtype == 12 or checkedtype == 23) then
+		elseif not lastprot and (checkedtype == 12 or checkedtype == 23 or isModdedBomb(checkedtype)) then
 			break
 		elseif not ((checkedtype == 37 and checkedrot%2 == direction%2) or checkedtype == 38) then
-			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23) then
+			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(checkedtype)) then
 				break
 			else
 				cells[cy][cx].projectedtype = lasttype
@@ -1166,6 +1166,22 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					enemyparticles:emit(50)
 				end
 				break
+			elseif not storedcell.protected and isModdedBomb(cells[cy][cx].ctype) then
+				if storedcell.ctype == 23 then 
+					cells[cy][cx] = storedcell
+					cells[cy][cx].ctype = 12
+					love.audio.play(destroysound)
+					enemyparticles:setPosition(cx*20,cy*20)
+					enemyparticles:emit(50)
+					canPushCell(cx, cy, prevx, prevy)
+				elseif storedcell.ctype ~= 0 then 
+					cells[cy][cx].ctype = 0
+					love.audio.play(destroysound)
+					enemyparticles:setPosition(cx*20,cy*20)
+					enemyparticles:emit(50)
+					canPushCell(cx, cy, prevx, prevy)
+				end
+				break
 			elseif cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot+2)%4 == direction or (cells[cy][cx].rot+3)%4 == direction) then
 				local olddir = direction
 				if (cells[cy][cx].rot+3)%4 == direction then
@@ -1191,7 +1207,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					break
 				end
 			elseif not ((cells[cy][cx].ctype == 37 and cells[cy][cx].rot%2 == direction%2) or cells[cy][cx].ctype == 38) then
-				if reps ~= 1 and cells[cy][cx].ctype ~= 0 and not cells[cy][cx].protected and (storedcell.ctype == 12 or storedcell.ctype == 23) then
+				if reps ~= 1 and cells[cy][cx].ctype ~= 0 and not cells[cy][cx].protected and (storedcell.ctype == 12 or storedcell.ctype == 23 or isModdedBomb(storedcell.ctype)) then
 					if storedcell.ctype == 23 then
 						if cells[cy][cx].ctype == 23 then
 							cells[cy][cx].ctype = 0
@@ -1211,6 +1227,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					love.audio.play(destroysound)
 					enemyparticles:setPosition(cx*20,cy*20)
 					enemyparticles:emit(50)
+					canPushCell(px, py, 0, 0)
 					break
 				else
 					local oldcell = CopyCell(cx,cy)
@@ -1381,7 +1398,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				break
 			end
 			cells[cy][cx].updatekey = updatekey
-		until (totalforce <= 0 and checkedtype ~= 15 and checkedtype ~= 30 and checkedtype ~= 37 and checkedtype ~= 38) or checkedtype == 0 or checkedtype == 11 or checkedtype == 50 or checkedtype == 12 or checkedtype == 23
+		until (totalforce <= 0 and checkedtype ~= 15 and checkedtype ~= 30 and checkedtype ~= 37 and checkedtype ~= 38) or checkedtype == 0 or checkedtype == 11 or checkedtype == 50 or checkedtype == 12 or checkedtype == 23 or isModdedBomb(checkedtype)
 		--movement time
 		cells[cy][cx].testvar = "end"
 		if totalforce > 0 then
@@ -1404,7 +1421,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				elseif direction == 1 then
 					cy = cy - 1
 				end
-				if cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
+				if cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or moddedBombs[checkedtype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
 					if reps ~= 1 then
 						cells[lastcy][lastcx].ctype = 0
 					end
@@ -3383,6 +3400,7 @@ function love.draw()
 			end
 		end
 	end
+	modsCustomDraw()
 	love.graphics.setColor(1,1,1,0.25)
 	if selecting then love.graphics.rectangle("fill",math.floor((selx)*zoom-offx),math.floor((sely)*zoom-offy),selw*zoom,selh*zoom) end
 	love.graphics.setColor(1,1,1,0.5)

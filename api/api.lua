@@ -87,3 +87,16 @@ function initMods()
     mod.init()
   end
 end
+
+function modsCustomDraw()
+  for i=1,#mods,1 do
+    local mod = require(mods[i])
+    if mod.customdraw ~= nil then
+			mod.customdraw()
+		end
+  end
+end
+
+function isModdedBomb(id)
+	return (moddedBombs[id] == true)
+end

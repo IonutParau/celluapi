@@ -14,7 +14,7 @@ The arguments of update are: id, x, y, rotation.
 
 To create a custom cell use addCell. It takes 3 parameters (though there is an optional one as well).
 
-The parameters are: the cell label, the name of the texture file (with .png), a function for defining if it can be pushed (has 6 parameters, the cells x, y, and rotation and the pushers x, y, and rotation). There is a 4th optional argument for defining if it is a puller/pusher. Recommended for things that need to pull.
+The parameters are: the cell label, the name of the texture file (with .png), a function for defining if it can be pushed (has 6 parameters, the cells x, y, and rotation and the pushers x, y, and rotation). There is a 4th optional argument for defining the type. The types are: normal, mover and enemy. By default its normal.
 
 The modding API allows you to access any function in CelLua, and even override them (not recommended, do not try).
 
