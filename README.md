@@ -19,8 +19,7 @@ The parameters are: the cell label, the name of the texture file (with .png), a 
 The modding API allows you to access any function in CelLua, and even override them (not recommended, do not try).
 
 ## How to install a mod
-To install a mod you just need to put the mod's files in here.
-After that, you need to find the mods.txt file. In that file, you need to make sure there is a line with the exact name of the .lua file the mod needs.
+To install a mod, after you downloaded CelLuAPI as a .love file, rename it from .love to .zip and then extract it in some folder. In that folder, you have to drag and drop the files of the mod. After that, look for a file called mods.txt and edit it to make sure it has in at least 1 line the name of the mod. After that turn the folder into a zip file and rename the zip file from .zip to .love and then double click it to run it.
 ## Running
 1. Download a release, preferably the latest one, at https://github.com/IonutParau/celluapi
 2. Download and install LOVE at https://love2d.org
