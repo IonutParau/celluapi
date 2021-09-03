@@ -22,7 +22,7 @@ The modding API allows you to access any function in CelLua, and even override t
 To install a mod you just need to put the mod's files in here.
 After that, you need to find the mods.txt file. In that file, you need to make sure there is a line with the exact name of the .lua file the mod needs.
 ## Running
-1. Download a release, preferably the latest one, at https://github.com/KyYay/CelLua-Machine/releases
+1. Download a release, preferably the latest one, at https://github.com/IonutParau/celluapi
 2. Download and install LOVE at https://love2d.org
 3. Double-click the .love file (might not work on all OS, for more info see https://love2d.org/wiki/Getting_Started#Running_Games)
 ## Sharing Levels
