@@ -1000,7 +1000,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		if checkedtype > initialCellCount then
 			moddedCanPush = canPushCell(cx, cy, prevx, prevy)
 		end
-		if checkedtype == 1 or checkedtype == 13 or checkedtype == 27 or checkedtype == 41 then
+		if checkedtype == 1 or checkedtype == 13 or checkedtype == 27 or checkedtype == 41 or moddedMovers[checkedtype] ~= nil then
 			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				if isModdedBomb(lasttype) then
 					modsOnModEnemyDed(lasttype, cx, cy)
