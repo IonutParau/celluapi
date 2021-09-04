@@ -12,6 +12,14 @@ function getCellLabelById(id)
   return cellLabels[id] or "unknown"
 end
 
+function getCellIDByLabel(label)
+  for id,val in pairs(cellLabels) do
+    if val == label then
+      return id
+    end
+  end
+end
+
 function rotateCell(x, y, amount)
   cells[y][x].rot = (cells[y][x].rot+amount)%4
 end

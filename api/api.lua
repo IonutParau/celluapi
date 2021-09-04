@@ -82,10 +82,17 @@ function UpdateModdedCells()
 end
 
 function initMods()
+	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. " (") end
   for i=1,#mods,1 do
     local mod = require(mods[i])
     mod.init()
+		if i == #mods then
+			love.window.setTitle(love.window.getTitle() .. mods[i])
+		else
+			love.window.setTitle(love.window.getTitle() .. mods[i] .. ",")
+		end
   end
+	love.window.setTitle(love.window.getTitle() .. ")")
 end
 
 function modsCustomDraw()
@@ -120,6 +127,15 @@ function modsOnTrashEat(id, x, y)
 		local mod = require(mods[i])
 		if mod.onTrashEats ~= nil then
 			mod.onTrashEats(id, x, y)
+		end
+	end
+end
+
+function modsOnPlace(id, x, y, rot)
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onPlace ~= nil then
+			mod.onPlace(id, x, y, rot)
 		end
 	end
 end

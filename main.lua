@@ -1066,14 +1066,11 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				totalforce = 0
 			end
 		elseif not lastprot and (checkedtype == 12 or checkedtype == 23 or isModdedBomb(checkedtype)) then
-			if isModdedBomb(lasttype) then
-				modsOnModEnemyDed(lasttype, cx, cy)
-			end
 			break
 		elseif not ((checkedtype == 37 and checkedrot%2 == direction%2) or checkedtype == 38) then
-			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(checkedtype)) then
-				if isModdedBomb(checkedtype) then
-					modsOnModEnemyDed(checkedtype, cx, cy)
+			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
+				if isModdedBomb(lasttype) then
+					modsOnModEnemyDed(lasttype, cx, cy)
 				end
 				break
 			else
@@ -1184,20 +1181,13 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				end
 				break
 			elseif not storedcell.protected and isModdedBomb(cells[cy][cx].ctype) then
-				if storedcell.ctype == 23 then 
-					cells[cy][cx] = storedcell
-					cells[cy][cx].ctype = 12
-					love.audio.play(destroysound)
-					enemyparticles:setPosition(cx*20,cy*20)
-					enemyparticles:emit(50)
+				if storedcell.ctype ~= 0 then
+					modsOnModEnemyDed(cells[cy][cx].ctype, cx, cy)
 					canPushCell(cx, cy, prevx, prevy)
-				elseif storedcell.ctype ~= 0 then 
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
 					enemyparticles:setPosition(cx*20,cy*20)
 					enemyparticles:emit(50)
-					canPushCell(cx, cy, prevx, prevy)
-					modsOnModEnemyDed(cells[cy][cx].ctype, cx, cy)
 				end
 				break
 			elseif cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot+2)%4 == direction or (cells[cy][cx].rot+3)%4 == direction) then
@@ -1597,6 +1587,11 @@ function UpdateMirrors()
 				if not cells[y][x].updated and (cells[y][x].ctype == 14 and (cells[y][x].rot == 0 or cells[y][x].rot == 2) or cells[y][x].ctype == 55) then
 					if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= 50 and cells[y][x-1].ctype ~= 55 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 40 and (cells[y][x-1].ctype ~= 14 or cells[y][x-1].rot%2 == 1)
 					and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= 50 and cells[y][x+1].ctype ~= 55 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 40 and (cells[y][x+1].ctype ~= 14 or cells[y][x+1].rot%2 == 1) then
+						if cells[y][x-1].ctype > initialCellCount then
+							if not canPushCell(cells[y][x-1].ctype, x-1, y, x+1, y) then
+								return
+							end
+						end
 						local oldcell = CopyCell(x-1,y)
 						cells[y][x-1] = CopyCell(x+1,y)
 						cells[y][x+1] = oldcell
@@ -1619,6 +1614,11 @@ function UpdateMirrors()
 				if not cells[y][x].updated and (cells[y][x].ctype == 14 and (cells[y][x].rot == 1 or cells[y][x].rot == 3) or cells[y][x].ctype == 55) then
 					if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= 55 and cells[y-1][x].ctype ~= 50 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 40 and (cells[y-1][x].ctype ~= 14 or cells[y-1][x].rot%2 == 0)
 					and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= 55 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 40 and (cells[y+1][x].ctype ~= 14 or cells[y+1][x].rot%2 == 0) then
+						if cells[y][y-1].ctype > initialCellCount then
+							if not canPushCell(cells[y][x-1].ctype, x, y-1, x, y+1) then
+								return
+							end
+						end
 						local oldcell = CopyCell(x,y-1)
 						cells[y-1][x] = CopyCell(x,y+1)
 						cells[y+1][x] = oldcell
@@ -3349,6 +3349,7 @@ function love.update(dt)
 					else
 						cells[y][x].ctype = currentstate
 						cells[y][x].rot = currentrot
+						modsOnPlace(currentstate, x, y, currentrot)
 						cells[y][x].lastvars = {x,y,currentrot}
 						if isinitial then
 							initial[y][x].ctype = currentstate
@@ -3513,8 +3514,8 @@ function love.draw()
 		love.graphics.rectangle("fill",100*winxm,75*winym,600*winxm,450*winym)
 		love.graphics.setColor(1,1,1,1)
 		love.graphics.print("this is the menu",300*winxm,120*winym,0,2*winxm,2*winym)
-		love.graphics.print("CelLua Machine v1.4.0",330*winxm,90*winym,0,winxm,winym)
-		love.graphics.print("by KyYay",365*winxm,105*winym,0,winxm,winym)
+		love.graphics.print("CelLuAPI by IonutDoesStuffYT#1595",300*winxm,90*winym,0,winxm,winym)
+		love.graphics.print("built on CelLua by KyYay",335*winxm,105*winym,0,winxm,winym)
 		love.graphics.print("Update delay: "..string.sub(delay,1,4).."s",150*winxm,145*winym,0,winxm,winym)
 		love.graphics.print("Ticks per update: "..tpu,150*winxm,180*winym,0,winxm,winym)
 		love.graphics.print("Volume: "..volume*100 .."%",150*winxm,215*winym,0,winxm,winym)
@@ -3524,6 +3525,13 @@ function love.draw()
 		love.graphics.print("Debug (Can cause lag!)",200*winxm,378*winym,0,winxm,winym)
 		love.graphics.print("Fancy Graphix",400*winxm,378*winym,0,winxm,winym)
 		love.graphics.print("Subticking",550*winxm,378*winym,0,winxm,winym)
+		local modsString = "Running mods: "
+		for i=1,#mods,1 do
+			modsString = modsString .. mods[i] .. " "
+		end
+		if #mods> 0 then
+			love.graphics.print(modsString,100*winxm,510*winym,0,winxm,winym)
+		end
 		love.graphics.setColor(1/4,1/4,1/4,1)
 		love.graphics.rectangle("fill",150*winxm,160*winym,500*winxm,10*winym)
 		love.graphics.rectangle("fill",150*winxm,195*winym,500*winxm,10*winym)
@@ -3563,7 +3571,7 @@ function love.draw()
 		if x > 570 and y > 420 and x < 630 and y < 480 then love.graphics.setColor(1,1,1,0.75) love.graphics.print("Load level\n(V3/K1/K2)",570*winxm,480*winym,0,winxm,winym)  else love.graphics.setColor(1,1,1,0.5) end
 		love.graphics.draw(tex[16],600*winxm,450*winym,math.pi*0.5,60*winym/texsize[16].w,60*winxm/texsize[16].h,texsize[16].w2,texsize[16].h2)
 	end
-	if showinstructions or inmenu then
+	if showinstructions then
 		love.graphics.setColor(1,1,1,1)
 		love.graphics.print("WASD = Move\n(Ctrl to speed up)\n\nQ/E = Rotate\n\nEsc = Menu\n\nZ/C = Change cell selection page\n\nSpace = Pause\n\nF = Advance one tick\n\nUp/down or mousewheel = Zoom in/out\n\nTab = Select\n\nOther shortcuts are obvious",10*winxm,300*winym,0,1*winxm,1*winym)
 	end
