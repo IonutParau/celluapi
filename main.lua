@@ -35,6 +35,7 @@ tex.copy = love.graphics.newImage("copy.png")
 tex.cut = love.graphics.newImage("cut.png") 
 tex.paste = love.graphics.newImage("paste.png")
 tex.nonexistant = love.graphics.newImage("nonexistant.png")
+initMods()
 --[[local path = love.filesystem.getSourceBaseDirectory()								--this crap doesn't work >:(
 if (love.filesystem.getInfo(path.."/cellua-textures") or {})[1] == "directory" then
 	for i=-2,48 do
@@ -3219,7 +3220,6 @@ function love.load()
 		initialCells[#initialCells+1] = listorder[i]
 		cellsForIDManagement[#cellsForIDManagement+1] = listorder[i]
 	end
-	initMods();
 	for y=0,height-1 do
 		initial[y] = {}
 		cells[y] = {}
