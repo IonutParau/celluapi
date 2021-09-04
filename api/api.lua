@@ -97,6 +97,37 @@ function modsCustomDraw()
   end
 end
 
+function modsTick(dt)
+  for i=1,#mods,1 do
+    local mod = require(mods[i])
+    if mod.tick ~= nil then
+			mod.tick(dt)
+		end
+  end
+end
+
+function modsOnModEnemyDed(id, x, y)
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onEnemyDies ~= nil then
+			mod.onEnemyDies(id, x, y)
+		end
+	end
+end
+
+function modsOnTrashEat(id, x, y)
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onTrashEats ~= nil then
+			mod.onTrashEats(id, x, y)
+		end
+	end
+end
+
+function isModdedTrash(id)
+	return (moddedTrash[id] ~= nil)
+end
+
 function isModdedBomb(id)
-	return (moddedBombs[id] == true)
+	return (moddedBombs[id] ~= nil)
 end

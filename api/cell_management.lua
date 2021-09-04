@@ -1,16 +1,15 @@
 pushabilitySheet = {}
 moddedMovers = {}
 moddedBombs = {}
+moddedTrash = {}
+cellsForIDManagement = {}
 cellLabels = {}
 
 function getCellLabelById(id)
   if initialCells[id] ~= nil then
     return "vanilla"
-  elseif cellLabels[id] ~= nil then
-    return cellLabels[id]
-  else
-    return "unknown"
   end
+  return cellLabels[id] or "unknown"
 end
 
 function rotateCell(x, y, amount)
@@ -22,21 +21,28 @@ function getCellLabel(x, y)
   return getCellLabelById(id)
 end
 
-function addCell(label, texture, push, type)
+function addCell(label, texture, push, type, invisible)
   if label == "vanilla" or label == "unknown" then
     error("Invalid label for custom cell")
   end
-  local cellID = #listorder+1
+  local cellID = #cellsForIDManagement+1
   tex[cellID] = love.graphics.newImage(texture)
-  listorder[#listorder+1] = cellID
+  invisible = invisible or false
+  if invisible == false then
+    listorder[#listorder+1] = cellID
+  end
   pushabilitySheet[cellID] = push
   cellLabels[cellID] = label
+  cellsForIDManagement[#cellsForIDManagement+1] = cellID
   type = type or "normal"
   if type == "mover" then
     moddedMovers[cellID] = true
   end
   if type == "enemy" then
     moddedBombs[cellID] = true
+  end
+  if type == "trash" then
+    moddedTrash[cellID] = true
   end
   for k,v in pairs(tex) do
     texsize[k] = {}

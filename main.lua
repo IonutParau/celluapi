@@ -1001,6 +1001,9 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		end
 		if checkedtype == 1 or checkedtype == 13 or checkedtype == 27 or checkedtype == 41 then
 			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
+				if isModdedBomb(lasttype) then
+					modsOnModEnemyDed(lasttype, cx, cy)
+				end
 				break
 			else
 				if not pushingdiverger then	--any force towards the mover would go into the diverger so it doesnt count (also it makes some interactions symmetrical-er)
@@ -1032,6 +1035,9 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		or checkedtype == 53 and direction == (checkedrot+2)%4
 		or checkedtype > initialCellCount and not canPushCell(cx, cy, prevx, prevy) then
 			if checkedtype ~= -1 and checkedtype ~= 40 and reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
+				if isModdedBomb(lasttype) then
+					modsOnModEnemyDed(lasttype, cx, cy)
+				end
 				break
 			else
 				totalforce = 0
@@ -1059,9 +1065,15 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				totalforce = 0
 			end
 		elseif not lastprot and (checkedtype == 12 or checkedtype == 23 or isModdedBomb(checkedtype)) then
+			if isModdedBomb(lasttype) then
+				modsOnModEnemyDed(lasttype, cx, cy)
+			end
 			break
 		elseif not ((checkedtype == 37 and checkedrot%2 == direction%2) or checkedtype == 38) then
 			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(checkedtype)) then
+				if isModdedBomb(checkedtype) then
+					modsOnModEnemyDed(checkedtype, cx, cy)
+				end
 				break
 			else
 				cells[cy][cx].projectedtype = lasttype
@@ -1095,7 +1107,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 			break
 		end
 		cells[cy][cx].updatekey = updatekey
-	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or checkedtype == 50 or checkedtype == 43 and checkedrot == (direction+2)%4 or (checkedtype == 47 or checkedtype == 48) and checkedrot == direction and not checkedupd
+	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or isModdedTrash(checkedtype) or checkedtype == 50 or checkedtype == 43 and checkedrot == (direction+2)%4 or (checkedtype == 47 or checkedtype == 48) and checkedrot == direction and not checkedupd
 	--movement time
 	cells[cy][cx].testvar = "end"
 	if totalforce > 0 then
@@ -1118,14 +1130,18 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				cy = cy + 1
 			end
 			if cx < 0 or cy < 0 then error(cx.." "..cy..":"..x.." "..y) end
-			if cells[cy][cx].ctype == 11 or  cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
+			if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or  cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
 				if storedcell.ctype ~= 0 then
 					love.audio.play(destroysound)
+					if isModdedTrash(cells[cy][cx].ctype) then
+						modsOnTrashEat(cells[cy][cx].ctype, cx, cy)
+					end
+					canPushCell(cx, cy, prevx, prevy)
 					if cells[cy][cx].ctype == 50 then
-						if cx < width-1 and (not cells[cy][cx+1].protected and cells[cy][cx+1].ctype ~= -1 and cells[cy][cx+1].ctype ~= 11 and cells[cy][cx+1].ctype ~= 40 and cells[cy][cx+1].ctype ~= 50) then cells[cy][cx+1].ctype = 0 end
-						if cx > 0 and (not cells[cy][cx-1].protected and cells[cy][cx-1].ctype ~= -1 and cells[cy][cx-1].ctype ~= 11 and cells[cy][cx-1].ctype ~= 40 and cells[cy][cx-1].ctype ~= 50) then cells[cy][cx-1].ctype = 0 end
-						if cy < height-1 and (not cells[cy+1][cx].protected and cells[cy+1][cx].ctype ~= -1 and cells[cy+1][cx].ctype ~= 11 and cells[cy+1][cx].ctype ~= 40 and cells[cy+1][cx].ctype ~= 50) then cells[cy+1][cx].ctype = 0 end
-						if cy > 0 and (not cells[cy-1][cx].protected and cells[cy-1][cx].ctype ~= -1 and cells[cy-1][cx].ctype ~= 11 and cells[cy-1][cx].ctype ~= 40 and cells[cy-1][cx].ctype ~= 50) then cells[cy-1][cx].ctype = 0 end
+						if cx < width-1 and (not cells[cy][cx+1].protected and cells[cy][cx+1].ctype ~= -1 and cells[cy][cx+1].ctype ~= 11 and not isModdedTrash(cells[cy][cx+1].ctype) and cells[cy][cx+1].ctype ~= 40 and cells[cy][cx+1].ctype ~= 50) then cells[cy][cx+1].ctype = 0 end
+						if cx > 0 and (not cells[cy][cx-1].protected and cells[cy][cx-1].ctype ~= -1 and cells[cy][cx-1].ctype ~= 11 and not isModdedTrash(cells[cy][cx-1].ctype) and cells[cy][cx-1].ctype ~= 40 and cells[cy][cx-1].ctype ~= 50) then cells[cy][cx-1].ctype = 0 end
+						if cy < height-1 and (not cells[cy+1][cx].protected and cells[cy+1][cx].ctype ~= -1 and cells[cy+1][cx].ctype ~= 11 and not isModdedTrash(cells[cy+1][cx].ctype) and cells[cy+1][cx].ctype ~= 40 and cells[cy+1][cx].ctype ~= 50) then cells[cy+1][cx].ctype = 0 end
+						if cy > 0 and (not cells[cy-1][cx].protected and cells[cy-1][cx].ctype ~= -1 and cells[cy-1][cx].ctype ~= 11 and not isModdedTrash(cells[cy-1][cx].ctype) and cells[cy-1][cx].ctype ~= 40 and cells[cy-1][cx].ctype ~= 50) then cells[cy-1][cx].ctype = 0 end
 					end
 				end
 				break
@@ -1180,6 +1196,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					enemyparticles:setPosition(cx*20,cy*20)
 					enemyparticles:emit(50)
 					canPushCell(cx, cy, prevx, prevy)
+					modsOnModEnemyDed(cells[cy][cx].ctype, cx, cy)
 				end
 				break
 			elseif cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot+2)%4 == direction or (cells[cy][cx].rot+3)%4 == direction) then
@@ -1217,6 +1234,8 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 							cells[cy][cx].updated = storedcell.updated
 							cells[cy][cx].lastvars = {storedcell.lastvars[1],storedcell.lastvars[2],storedcell.lastvars[3]}
 						end
+					elseif isModdedBomb(storedcell.ctype) then
+						modsOnModEnemyDed(storedcell.ctype, cx, cy)
 					else
 						if cells[cy][cx].ctype == 23 then
 							cells[cy][cx].ctype = 12
@@ -1274,8 +1293,11 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 			elseif direction == 1 then
 				cy = cy + 1
 			end
-			if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 50 or not cells[y][x].protected and (cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23)
+			if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or not cells[y][x].protected and (cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23)
 			or (cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 and cells[cy][cx].rot%2 == (direction+1)%2) or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
+				if isModdedTrash(cells[cy][cx].ctype) then
+					modsOnTrashEat()
+				end
 				break
 			elseif cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot+2)%4 == direction or (cells[cy][cx].rot+3)%4 == direction) then
 				local olddir = direction
@@ -1398,7 +1420,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				break
 			end
 			cells[cy][cx].updatekey = updatekey
-		until (totalforce <= 0 and checkedtype ~= 15 and checkedtype ~= 30 and checkedtype ~= 37 and checkedtype ~= 38) or checkedtype == 0 or checkedtype == 11 or checkedtype == 50 or checkedtype == 12 or checkedtype == 23 or isModdedBomb(checkedtype)
+		until (totalforce <= 0 and checkedtype ~= 15 and checkedtype ~= 30 and checkedtype ~= 37 and checkedtype ~= 38) or checkedtype == 0 or checkedtype == 11 or checkedtype == 50 or checkedtype == 12 or checkedtype == 23 or isModdedBomb(checkedtype) or isModdedTrash(checkedtype)
 		--movement time
 		cells[cy][cx].testvar = "end"
 		if totalforce > 0 then
@@ -1421,9 +1443,12 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				elseif direction == 1 then
 					cy = cy - 1
 				end
-				if cells[cy][cx].ctype == 11 or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or moddedBombs[checkedtype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
+				if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or moddedBombs[checkedtype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
 					if reps ~= 1 then
 						cells[lastcy][lastcx].ctype = 0
+						if isModdedTrash(cells[cy][cx].ctype) then
+							modsOnTrashEat(cells[cy][cx].ctype, cx, cy)
+						end
 					end
 					break
 				elseif cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot)%4 == direction or (cells[cy][cx].rot+1)%4 == direction) then
@@ -1458,14 +1483,17 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 					break
 				elseif not ((cells[cy][cx].ctype == 37 and cells[cy][cx].rot%2 == direction%2) or cells[cy][cx].ctype == 38) then
 					if lastcx == frontcx and lastcy == frontcy then
-						if cells[frontcy][frontcx].ctype == 11 or cells[frontcy][frontcx].ctype == 50 or cells[frontcy][frontcx].ctype == 43 and (cells[frontcy][frontcx].rot+addedrot)%4 == (direction+2)%4 then
+						if cells[frontcy][frontcx].ctype == 11 or isModdedTrash(cells[frontcy][frontcx].ctype) or cells[frontcy][frontcx].ctype == 50 or cells[frontcy][frontcx].ctype == 43 and (cells[frontcy][frontcx].rot+addedrot)%4 == (direction+2)%4 then
 							if cells[cy][cx].ctype ~= 0 then
 								love.audio.play(destroysound)
+								if isModdedTrash(cells[frontcy][frontcx].ctype) then
+									modsOnTrashEat(cells[frontcy][frontcx].ctype, frontcx, frontcy)
+								end
 								if cells[frontcy][frontcx].ctype == 50 then
-									if frontcx < width-1 and (not cells[frontcy][frontcx+1].protected and cells[frontcy][frontcx+1].ctype ~= -1 and cells[frontcy][frontcx+1].ctype ~= 11 and cells[frontcy][frontcx+1].ctype ~= 40 and cells[frontcy][frontcx+1].ctype ~= 50) then cells[frontcy][frontcx+1].ctype = 0 end
-									if frontcx > 0 and (not cells[frontcy][frontcx-1].protected and cells[frontcy][frontcx-1].ctype ~= -1 and cells[frontcy][frontcx-1].ctype ~= 11 and cells[frontcy][frontcx-1].ctype ~= 40 and cells[frontcy][frontcx-1].ctype ~= 50) then cells[frontcy][frontcx-1].ctype = 0 end
-									if frontcy < height-1 and (not cells[frontcy+1][frontcx].protected and cells[frontcy+1][frontcx].ctype ~= -1 and cells[frontcy+1][frontcx].ctype ~= 11 and cells[frontcy+1][frontcx].ctype ~= 40 and cells[frontcy+1][frontcx].ctype ~= 50) then cells[frontcy+1][frontcx].ctype = 0 end
-									if frontcy > 0 and (not cells[frontcy-1][frontcx].protected and cells[frontcy-1][frontcx].ctype ~= -1 and cells[frontcy-1][frontcx].ctype ~= 11 and cells[frontcy-1][frontcx].ctype ~= 40 and cells[frontcy-1][frontcx].ctype ~= 50) then cells[frontcy-1][frontcx].ctype = 0 end
+									if frontcx < width-1 and (not cells[frontcy][frontcx+1].protected and cells[frontcy][frontcx+1].ctype ~= -1 and cells[frontcy][frontcx+1].ctype ~= 11 and not isModdedTrash(cells[frontcy][frontcx+1].ctype) and cells[frontcy][frontcx+1].ctype ~= 40 and cells[frontcy][frontcx+1].ctype ~= 50) then cells[frontcy][frontcx+1].ctype = 0 end
+									if frontcx > 0 and (not cells[frontcy][frontcx-1].protected and cells[frontcy][frontcx-1].ctype ~= -1 and cells[frontcy][frontcx-1].ctype ~= 11 and not isModdedTrash(cells[frontcy][frontcx-1].ctype) and cells[frontcy][frontcx-1].ctype ~= 40 and cells[frontcy][frontcx-1].ctype ~= 50) then cells[frontcy][frontcx-1].ctype = 0 end
+									if frontcy < height-1 and (not cells[frontcy+1][frontcx].protected and cells[frontcy+1][frontcx].ctype ~= -1 and cells[frontcy+1][frontcx].ctype ~= 11 and not isModdedTrash(cells[frontcy+1][frontcx].ctype) and cells[frontcy+1][frontcx].ctype ~= 40 and cells[frontcy+1][frontcx].ctype ~= 50) then cells[frontcy+1][frontcx].ctype = 0 end
+									if frontcy > 0 and (not cells[frontcy-1][frontcx].protected and cells[frontcy-1][frontcx].ctype ~= -1 and cells[frontcy-1][frontcx].ctype ~= 11 and not isModdedTrash(cells[frontcy-1][frontcx].ctype) and cells[frontcy-1][frontcx].ctype ~= 40 and cells[frontcy-1][frontcx].ctype ~= 50) then cells[frontcy-1][frontcx].ctype = 0 end
 								end
 							end
 						elseif cells[frontcy][frontcx].ctype == 12 then
@@ -3189,6 +3217,7 @@ function love.load()
 	initialCells = {}
 	for i=1,#listorder,1 do
 		initialCells[#initialCells+1] = listorder[i]
+		cellsForIDManagement[#cellsForIDManagement+1] = listorder[i]
 	end
 	initMods();
 	for y=0,height-1 do
@@ -3250,6 +3279,7 @@ function love.update(dt)
 	else
 		if not paused then
 			dtime = dtime + dt
+			modsTick(dt)
 			if updatekey > 10000000000 then updatekey = 0 end --juuuust in case
 			if supdatekey > 10000000000 then supdatekey = 0 end
 			if dtime > delay then
