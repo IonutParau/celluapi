@@ -35,7 +35,6 @@ tex.copy = love.graphics.newImage("copy.png")
 tex.cut = love.graphics.newImage("cut.png") 
 tex.paste = love.graphics.newImage("paste.png")
 tex.nonexistant = love.graphics.newImage("nonexistant.png")
-initMods()
 --[[local path = love.filesystem.getSourceBaseDirectory()								--this crap doesn't work >:(
 if (love.filesystem.getInfo(path.."/cellua-textures") or {})[1] == "directory" then
 	for i=-2,48 do
@@ -54,6 +53,7 @@ for k,v in pairs(tex) do
 	texsize[k].h2 = tex[k]:getHeight()/2
 end
 listorder = {0,-2,40,-1,1,13,27,57,2,22,25,26,39,54,44,45,3,4,5,6,7,51,52,53,8,9,10,56,16,29,17,18,20,49,28,14,55,15,30,37,38,11,50,12,23,24,19,46,31,32,33,34,35,36,41,21,42,43,47,48}
+initMods()
 local bgsprites,winx,winy,winxm,winymc
 local destroysound = love.audio.newSource("destroy.wav", "static")
 local beep = love.audio.newSource("beep.wav", "static")
@@ -3168,6 +3168,7 @@ UpdateModdedCells
 function DoTick()
 	if subtick then
 		if subtick == 0 then
+			modsTick()
 			for y=0,height-1 do
 				for x=0,width-1 do
 					cells[y][x].updated = false
@@ -3191,6 +3192,7 @@ function DoTick()
 		end
 		subtick = (subtick + 1)%#subticks
 	else
+		modsTick()
 		for y=0,height-1 do
 			for x=0,width-1 do
 				cells[y][x].updated = false
@@ -3279,7 +3281,6 @@ function love.update(dt)
 	else
 		if not paused then
 			dtime = dtime + dt
-			modsTick(dt)
 			if updatekey > 10000000000 then updatekey = 0 end --juuuust in case
 			if supdatekey > 10000000000 then supdatekey = 0 end
 			if dtime > delay then

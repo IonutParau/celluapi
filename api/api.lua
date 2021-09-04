@@ -97,11 +97,11 @@ function modsCustomDraw()
   end
 end
 
-function modsTick(dt)
+function modsTick()
   for i=1,#mods,1 do
     local mod = require(mods[i])
     if mod.tick ~= nil then
-			mod.tick(dt)
+			mod.tick()
 		end
   end
 end
