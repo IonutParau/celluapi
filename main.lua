@@ -3223,9 +3223,9 @@ function love.load()
 			initialCells[#initialCells+1] = listorder[i]
 			cellsForIDManagement[#cellsForIDManagement+1] = listorder[i]
 		end
+		initMods()
 	end
 	firstLoad = false
-	initMods()
 	for y=0,height-1 do
 		initial[y] = {}
 		cells[y] = {}
