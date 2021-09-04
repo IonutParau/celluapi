@@ -45,6 +45,7 @@ if (love.filesystem.getInfo(path.."/cellua-textures") or {})[1] == "directory" t
 	end
 end]]
 texsize = {}
+firstLoad = true
 for k,v in pairs(tex) do
 	texsize[k] = {}
 	texsize[k].w = tex[k]:getWidth()
@@ -53,13 +54,6 @@ for k,v in pairs(tex) do
 	texsize[k].h2 = tex[k]:getHeight()/2
 end
 listorder = {0,-2,40,-1,1,13,27,57,2,22,25,26,39,54,44,45,3,4,5,6,7,51,52,53,8,9,10,56,16,29,17,18,20,49,28,14,55,15,30,37,38,11,50,12,23,24,19,46,31,32,33,34,35,36,41,21,42,43,47,48}
-initialCellCount = #listorder
-initialCells = {}
-for i=1,#listorder,1 do
-	initialCells[#initialCells+1] = listorder[i]
-	cellsForIDManagement[#cellsForIDManagement+1] = listorder[i]
-end
-initMods()
 local bgsprites,winx,winy,winxm,winymc
 local destroysound = love.audio.newSource("destroy.wav", "static")
 local beep = love.audio.newSource("beep.wav", "static")
@@ -3222,6 +3216,16 @@ end
 
 function love.load()
 	bgsprites = love.graphics.newSpriteBatch(tex[0])
+	if firstLoad == true then
+		initialCellCount = #listorder
+		initialCells = {}
+		for i=1,#listorder,1 do
+			initialCells[#initialCells+1] = listorder[i]
+			cellsForIDManagement[#cellsForIDManagement+1] = listorder[i]
+		end
+	end
+	firstLoad = false
+	initMods()
 	for y=0,height-1 do
 		initial[y] = {}
 		cells[y] = {}
