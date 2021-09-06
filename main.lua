@@ -1444,13 +1444,11 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 						cells[lastcy][lastcx].ctype = 0
 					end
 					break
-				elseif cells[cy][cx].ctype > initialCellCount then
-					if not canPushCell(cx, cy, lastcx, lastcy, false) then
-						if reps ~= 1 then
-							cells[lastcy][lastcx].ctype = 0
-						end
-						break
+				elseif cells[cy][cx].ctype > initialCellCount and not canPushCell(cx, cy, lastcx, lastcy, false) then
+					if reps ~= 1 then
+						cells[lastcy][lastcx].ctype = 0
 					end
+					break
 				elseif cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot)%4 == direction or (cells[cy][cx].rot+1)%4 == direction) then
 					local olddir = direction
 					if (cells[cy][cx].rot+1)%4 == direction then
