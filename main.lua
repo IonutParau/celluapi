@@ -125,7 +125,8 @@ function SetChunk(x,y,ctype)
 	elseif ctype == 57 then
 		chunks[math.floor(y/25)][math.floor(x/25)].hasdriller = true
 	else
-		chunks[math.floor(y/25)][math.floor(x/25)].hasmodded = true
+		if not chunks[math.floor(y/25)][math.floor(x/25)].hasmodded then chunks[math.floor(y/25)][math.floor(x/25)].hasmodded = {} end
+		chunks[math.floor(y/25)][math.floor(x/25)].hasmodded[ctype] = true
 	end
 end
 
@@ -3169,7 +3170,8 @@ UpdateDrillers,
 UpdateAdvancers,
 UpdatePullers,
 UpdateMovers,
-UpdateGates
+UpdateGates,
+UpdateModdedCells
 }
 
 function DoTick()

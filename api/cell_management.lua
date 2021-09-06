@@ -59,6 +59,7 @@ function addCell(label, texture, push, type, invisible)
     texsize[k].w2 = tex[k]:getWidth()/2	--for optimization
     texsize[k].h2 = tex[k]:getHeight()/2
   end
+  moddedIDs[#moddedIDs+1] = cellID
   return cellID
 end
 
