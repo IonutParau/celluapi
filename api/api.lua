@@ -113,20 +113,20 @@ function modsTick()
   end
 end
 
-function modsOnModEnemyDed(id, x, y)
+function modsOnModEnemyDed(id, x, y, kid, kx, ky)
 	for i=1,#mods,1 do
 		local mod = require(mods[i])
 		if mod.onEnemyDies ~= nil then
-			mod.onEnemyDies(id, x, y)
+			mod.onEnemyDies(id, x, y, kid, kx, ky)
 		end
 	end
 end
 
-function modsOnTrashEat(id, x, y)
+function modsOnTrashEat(id, x, y, fid, fx, fy)
 	for i=1,#mods,1 do
 		local mod = require(mods[i])
 		if mod.onTrashEats ~= nil then
-			mod.onTrashEats(id, x, y)
+			mod.onTrashEats(id, x, y, fid, fx, fy)
 		end
 	end
 end

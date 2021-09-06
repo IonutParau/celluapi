@@ -54,7 +54,7 @@ for k,v in pairs(tex) do
 	texsize[k].h2 = tex[k]:getHeight()/2
 end
 listorder = {0,-2,40,-1,1,13,27,57,2,22,25,26,39,54,44,45,3,4,5,6,7,51,52,53,8,9,10,56,16,29,17,18,20,49,28,14,55,15,30,37,38,11,50,12,23,24,19,46,31,32,33,34,35,36,41,21,42,43,47,48}
-local bgsprites,winx,winy,winxm,winymc
+bgsprites,winx,winy,winxm,winymc = nil,nil,nil,nil,nil
 local destroysound = love.audio.newSource("destroy.wav", "static")
 local beep = love.audio.newSource("beep.wav", "static")
 local music = love.audio.newSource("music.wav", "stream")
@@ -1003,7 +1003,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		if checkedtype == 1 or checkedtype == 13 or checkedtype == 27 or checkedtype == 41 or moddedMovers[checkedtype] ~= nil then
 			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				if isModdedBomb(lasttype) then
-					modsOnModEnemyDed(lasttype, cx, cy)
+					modsOnModEnemyDed(lasttype, cx, cy, checkedtype, cx, cy)
 				end
 				break
 			else
@@ -1037,7 +1037,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		or checkedtype > initialCellCount and not canPushCell(cx, cy, prevx, prevy) then
 			if checkedtype ~= -1 and checkedtype ~= 40 and reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				if isModdedBomb(lasttype) then
-					modsOnModEnemyDed(lasttype, cx, cy)
+					modsOnModEnemyDed(lasttype, cx, cy, checkedtype, prevx, prevy)
 				end
 				break
 			else
@@ -1070,7 +1070,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		elseif not ((checkedtype == 37 and checkedrot%2 == direction%2) or checkedtype == 38) then
 			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				if isModdedBomb(lasttype) then
-					modsOnModEnemyDed(lasttype, cx, cy)
+					modsOnModEnemyDed(lasttype, cx, cy, checkedtype, prevx, prevy)
 				end
 				break
 			else
@@ -1132,7 +1132,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				if storedcell.ctype ~= 0 then
 					love.audio.play(destroysound)
 					if isModdedTrash(cells[cy][cx].ctype) then
-						modsOnTrashEat(cells[cy][cx].ctype, cx, cy)
+						modsOnTrashEat(cells[cy][cx].ctype, cx, cy, storedcell.ctype, prevx, prevy)
 					end
 					canPushCell(cx, cy, prevx, prevy)
 					if cells[cy][cx].ctype == 50 then
@@ -1182,7 +1182,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				break
 			elseif not storedcell.protected and isModdedBomb(cells[cy][cx].ctype) then
 				if storedcell.ctype ~= 0 then
-					modsOnModEnemyDed(cells[cy][cx].ctype, cx, cy)
+					modsOnModEnemyDed(cells[cy][cx].ctype, cx, cy, storedcell.ctype, prevx, prevy)
 					canPushCell(cx, cy, prevx, prevy)
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
@@ -1226,7 +1226,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 							cells[cy][cx].lastvars = {storedcell.lastvars[1],storedcell.lastvars[2],storedcell.lastvars[3]}
 						end
 					elseif isModdedBomb(storedcell.ctype) then
-						modsOnModEnemyDed(storedcell.ctype, cx, cy)
+						modsOnModEnemyDed(storedcell.ctype, prevx, prevy, cells[cx][cy].ctype, cx, cy)
 					else
 						if cells[cy][cx].ctype == 23 then
 							cells[cy][cx].ctype = 12
@@ -1287,7 +1287,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 			if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or not cells[y][x].protected and (cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23)
 			or (cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 and cells[cy][cx].rot%2 == (direction+1)%2) or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
 				if isModdedTrash(cells[cy][cx].ctype) then
-					modsOnTrashEat()
+					modsOnTrashEat(cells[cy][cx].ctype, cx, cy, storedcell.ctype, prevx, prevy)
 				end
 				break
 			elseif cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot+2)%4 == direction or (cells[cy][cx].rot+3)%4 == direction) then
@@ -1438,7 +1438,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 					if reps ~= 1 then
 						cells[lastcy][lastcx].ctype = 0
 						if isModdedTrash(cells[cy][cx].ctype) then
-							modsOnTrashEat(cells[cy][cx].ctype, cx, cy)
+							modsOnTrashEat(cells[cy][cx].ctype, cx, cy, storedcell.ctype, prevx, prevy)
 						end
 					end
 					break
@@ -1478,7 +1478,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 							if cells[cy][cx].ctype ~= 0 then
 								love.audio.play(destroysound)
 								if isModdedTrash(cells[frontcy][frontcx].ctype) then
-									modsOnTrashEat(cells[frontcy][frontcx].ctype, frontcx, frontcy)
+									modsOnTrashEat(cells[frontcy][frontcx].ctype, frontcx, frontcy, cells[cy][cx].ctype, cx, cy)
 								end
 								if cells[frontcy][frontcx].ctype == 50 then
 									if frontcx < width-1 and (not cells[frontcy][frontcx+1].protected and cells[frontcy][frontcx+1].ctype ~= -1 and cells[frontcy][frontcx+1].ctype ~= 11 and not isModdedTrash(cells[frontcy][frontcx+1].ctype) and cells[frontcy][frontcx+1].ctype ~= 40 and cells[frontcy][frontcx+1].ctype ~= 50) then cells[frontcy][frontcx+1].ctype = 0 end
@@ -3436,7 +3436,6 @@ function love.draw()
 			end
 		end
 	end
-	modsCustomDraw()
 	love.graphics.setColor(1,1,1,0.25)
 	if selecting then love.graphics.rectangle("fill",math.floor((selx)*zoom-offx),math.floor((sely)*zoom-offy),selw*zoom,selh*zoom) end
 	love.graphics.setColor(1,1,1,0.5)
@@ -3582,6 +3581,7 @@ function love.draw()
 	else
 		love.keyboard.setTextInput(false)
 	end
+	modsCustomDraw()
 end
 
 function love.mousepressed(x,y,b)

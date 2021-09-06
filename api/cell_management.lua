@@ -66,8 +66,8 @@ function canPushCell(cx, cy, px, py, pushing)
   local cdir = cells[cy][cx].rot
   local pdir = cells[py][px].rot
   local ctype = cells[cy][cx].ctype
-  if pushabilitySheet[ctype] == nil then
-    return nil
+  if not pushabilitySheet[ctype] then
+    return false
   end
   return pushabilitySheet[ctype](cx, cy, cdir, px, py, pdir, pushing)
 end
