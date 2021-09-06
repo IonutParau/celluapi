@@ -55,9 +55,9 @@ for k,v in pairs(tex) do
 end
 listorder = {0,-2,40,-1,1,13,27,57,2,22,25,26,39,54,44,45,3,4,5,6,7,51,52,53,8,9,10,56,16,29,17,18,20,49,28,14,55,15,30,37,38,11,50,12,23,24,19,46,31,32,33,34,35,36,41,21,42,43,47,48}
 bgsprites,winx,winy,winxm,winymc = nil,nil,nil,nil,nil
-local destroysound = love.audio.newSource("destroy.wav", "static")
-local beep = love.audio.newSource("beep.wav", "static")
-local music = love.audio.newSource("music.wav", "stream")
+destroysound = love.audio.newSource("destroy.wav", "static")
+beep = love.audio.newSource("beep.wav", "static")
+music = love.audio.newSource("music.wav", "stream")
 music:setLooping(true)
 love.audio.setVolume(0.5)
 love.audio.play(music)
@@ -125,7 +125,8 @@ function SetChunk(x,y,ctype)
 	elseif ctype == 57 then
 		chunks[math.floor(y/25)][math.floor(x/25)].hasdriller = true
 	else
-		chunks[math.floor(y/25)][math.floor(x/25)].hasmodded = true
+		if not chunks[math.floor(y/25)][math.floor(x/25)].hasmodded then chunks[math.floor(y/25)][math.floor(x/25)].hasmodded = {} end
+		chunks[math.floor(y/25)][math.floor(x/25)].hasmodded[ctype] = true
 	end
 end
 
@@ -998,7 +999,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		local checkedprot = cells[cy][cx].projectedprot
 		local moddedCanPush = false
 		if checkedtype > initialCellCount then
-			moddedCanPush = canPushCell(cx, cy, prevx, prevy)
+			moddedCanPush = canPushCell(cx, cy, prevx, prevy, true)
 		end
 		if checkedtype == 1 or checkedtype == 13 or checkedtype == 27 or checkedtype == 41 or moddedMovers[checkedtype] ~= nil then
 			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
@@ -1034,7 +1035,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		or checkedtype == 51 and direction ~= checkedrot 
 		or checkedtype == 52 and (direction ~= checkedrot and direction ~= (checkedrot-1)%4)
 		or checkedtype == 53 and direction == (checkedrot+2)%4
-		or checkedtype > initialCellCount and not canPushCell(cx, cy, prevx, prevy) then
+		or checkedtype > initialCellCount and not canPushCell(cx, cy, prevx, prevy, true) then
 			if checkedtype ~= -1 and checkedtype ~= 40 and reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				if isModdedBomb(lasttype) then
 					modsOnModEnemyDed(lasttype, cx, cy, checkedtype, prevx, prevy)
@@ -1134,7 +1135,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					if isModdedTrash(cells[cy][cx].ctype) then
 						modsOnTrashEat(cells[cy][cx].ctype, cx, cy, storedcell.ctype, prevx, prevy)
 					end
-					canPushCell(cx, cy, prevx, prevy)
+					canPushCell(cx, cy, prevx, prevy, true)
 					if cells[cy][cx].ctype == 50 then
 						if cx < width-1 and (not cells[cy][cx+1].protected and cells[cy][cx+1].ctype ~= -1 and cells[cy][cx+1].ctype ~= 11 and not isModdedTrash(cells[cy][cx+1].ctype) and cells[cy][cx+1].ctype ~= 40 and cells[cy][cx+1].ctype ~= 50) then cells[cy][cx+1].ctype = 0 end
 						if cx > 0 and (not cells[cy][cx-1].protected and cells[cy][cx-1].ctype ~= -1 and cells[cy][cx-1].ctype ~= 11 and not isModdedTrash(cells[cy][cx-1].ctype) and cells[cy][cx-1].ctype ~= 40 and cells[cy][cx-1].ctype ~= 50) then cells[cy][cx-1].ctype = 0 end
@@ -1183,7 +1184,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 			elseif not storedcell.protected and isModdedBomb(cells[cy][cx].ctype) then
 				if storedcell.ctype ~= 0 then
 					modsOnModEnemyDed(cells[cy][cx].ctype, cx, cy, storedcell.ctype, prevx, prevy)
-					canPushCell(cx, cy, prevx, prevy)
+					canPushCell(cx, cy, prevx, prevy, true)
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
 					enemyparticles:setPosition(cx*20,cy*20)
@@ -1237,7 +1238,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					love.audio.play(destroysound)
 					enemyparticles:setPosition(cx*20,cy*20)
 					enemyparticles:emit(50)
-					canPushCell(px, py, 0, 0)
+					canPushCell(px, py, 0, 0, true)
 					break
 				else
 					local oldcell = CopyCell(cx,cy)
@@ -1275,6 +1276,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 	local blocked = false
 	if not ignoreblockage then
 		while true do
+			local prevx, prevy = cx, cy
 			if direction == 0 then
 				cx = cx + 1	
 			elseif direction == 2 then
@@ -1287,7 +1289,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 			if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or not cells[y][x].protected and (cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23)
 			or (cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 and cells[cy][cx].rot%2 == (direction+1)%2) or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
 				if isModdedTrash(cells[cy][cx].ctype) then
-					modsOnTrashEat(cells[cy][cx].ctype, cx, cy, storedcell.ctype, prevx, prevy)
+					modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[prevy][prevx].ctype, prevx, prevy)
 				end
 				break
 			elseif cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot+2)%4 == direction or (cells[cy][cx].rot+3)%4 == direction) then
@@ -1436,12 +1438,19 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				end
 				if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or moddedBombs[checkedtype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
 					if reps ~= 1 then
-						cells[lastcy][lastcx].ctype = 0
 						if isModdedTrash(cells[cy][cx].ctype) then
-							modsOnTrashEat(cells[cy][cx].ctype, cx, cy, storedcell.ctype, prevx, prevy)
+							modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[lastcy][lastcx].ctype, cells[lastcy], cells[lastcx])
 						end
+						cells[lastcy][lastcx].ctype = 0
 					end
 					break
+				elseif cells[cy][cx].ctype > initialCellCount then
+					if not canPushCell(cx, cy, lastcx, lastcy, false) then
+						if reps ~= 1 then
+							cells[lastcy][lastcx].ctype = 0
+						end
+						break
+					end
 				elseif cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot)%4 == direction or (cells[cy][cx].rot+1)%4 == direction) then
 					local olddir = direction
 					if (cells[cy][cx].rot+1)%4 == direction then
@@ -1588,7 +1597,7 @@ function UpdateMirrors()
 					if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= 50 and cells[y][x-1].ctype ~= 55 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 40 and (cells[y][x-1].ctype ~= 14 or cells[y][x-1].rot%2 == 1)
 					and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= 50 and cells[y][x+1].ctype ~= 55 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 40 and (cells[y][x+1].ctype ~= 14 or cells[y][x+1].rot%2 == 1) then
 						if cells[y][x-1].ctype > initialCellCount then
-							if not canPushCell(cells[y][x-1].ctype, x-1, y, x+1, y) then
+							if not canPushCell(cells[y][x-1].ctype, x-1, y, x+1, y, true) then
 								return
 							end
 						end
@@ -1615,7 +1624,7 @@ function UpdateMirrors()
 					if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= 55 and cells[y-1][x].ctype ~= 50 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 40 and (cells[y-1][x].ctype ~= 14 or cells[y-1][x].rot%2 == 0)
 					and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= 55 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 40 and (cells[y+1][x].ctype ~= 14 or cells[y+1][x].rot%2 == 0) then
 						if cells[y][y-1].ctype > initialCellCount then
-							if not canPushCell(cells[y][x-1].ctype, x, y-1, x, y+1) then
+							if not canPushCell(cells[y][x-1].ctype, x, y-1, x, y+1, true) then
 								return
 							end
 						end
@@ -3141,7 +3150,7 @@ end
 	--Pushing Cells
 --Gates (because the input variables dont carry over to the next tick, so they need to be at the end in order to register anything that could activate an input)
 
-local subticks = {
+subticks = {
 UpdateFreezers,
 UpdateShields,
 UpdateMirrors,
@@ -3161,8 +3170,7 @@ UpdateDrillers,
 UpdateAdvancers,
 UpdatePullers,
 UpdateMovers,
-UpdateGates,
-UpdateModdedCells
+UpdateGates
 }
 
 function DoTick()
