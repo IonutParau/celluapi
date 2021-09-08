@@ -98,7 +98,7 @@ function getCellLabel(x, y)
   return getCellLabelById(id)
 end
 
-function addCell(label, texture, push, type, invisible)
+function addCell(label, texture, push, ctype, invisible, index)
   if label == "vanilla" or label == "unknown" then
     error("Invalid label for custom cell")
   end
@@ -106,19 +106,23 @@ function addCell(label, texture, push, type, invisible)
   tex[cellID] = love.graphics.newImage(texture)
   invisible = invisible or false
   if invisible == false then
-    listorder[#listorder+1] = cellID
+    if not index then
+      listorder[#listorder+1] = cellID
+    elseif type(index) == "number" then
+      table.insert(listorder, index, cellID)
+    end
   end
   pushabilitySheet[cellID] = push
   cellLabels[cellID] = label
   cellsForIDManagement[#cellsForIDManagement+1] = cellID
-  type = type or "normal"
-  if type == "mover" then
+  ctype = ctype or "normal"
+  if ctype == "mover" then
     moddedMovers[cellID] = true
   end
-  if type == "enemy" then
+  if ctype == "enemy" then
     moddedBombs[cellID] = true
   end
-  if type == "trash" then
+  if ctype == "trash" then
     moddedTrash[cellID] = true
   end
   for k,v in pairs(tex) do
