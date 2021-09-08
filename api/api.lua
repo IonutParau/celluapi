@@ -19,6 +19,7 @@ function DoModded(id, x, y, rot)
 end
 
 moddedIDs = {}
+walls = {-1, 40, 11, 50}
 
 function UpdateModdedCells()
   for i=1,#moddedIDs,1 do
@@ -119,29 +120,38 @@ function modsTick()
   end
 end
 
-function modsOnModEnemyDed(id, x, y, kid, kx, ky)
+function modsOnModEnemyDed(id, x, y, kid, kx, ky, krot)
 	for i=1,#mods,1 do
 		local mod = require(mods[i])
 		if mod.onEnemyDies ~= nil then
-			mod.onEnemyDies(id, x, y, kid, kx, ky)
+			mod.onEnemyDies(id, x, y, kid, kx, ky, krot)
 		end
 	end
 end
 
-function modsOnTrashEat(id, x, y, fid, fx, fy)
+function modsOnTrashEat(id, x, y, fid, fx, fy, frot)
 	for i=1,#mods,1 do
 		local mod = require(mods[i])
 		if mod.onTrashEats ~= nil then
-			mod.onTrashEats(id, x, y, fid, fx, fy)
+			mod.onTrashEats(id, x, y, fid, fx, fy, frot)
 		end
 	end
 end
 
-function modsOnPlace(id, x, y, rot)
+function modsOnPlace(id, x, y, rot, original)
 	for i=1,#mods,1 do
 		local mod = require(mods[i])
 		if mod.onPlace ~= nil then
-			mod.onPlace(id, x, y, rot)
+			mod.onPlace(id, x, y, rot, original)
+		end
+	end
+end
+
+function modsOnUnpause()
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onUnpause ~= nil then
+			mod.onUnpause()
 		end
 	end
 end

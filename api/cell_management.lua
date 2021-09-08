@@ -5,6 +5,75 @@ moddedTrash = {}
 cellsForIDManagement = {}
 cellLabels = {}
 
+function walkDivergedPath(from_x, from_y, to_x, to_y)
+  local dx, dy = from_x - to_x, from_y - to_y
+
+  local dir = 0
+
+  if dx == -1 then dir = 0 elseif dx == 1 then dir = 2 end
+  if dy == -1 then dir = 1 elseif dy == 1 then dir = 3 end 
+
+  local checkedrot = cells[to_y][to_x].rot
+
+  if cells[to_y][to_x].ctype == 15 then
+    if (checkedrot-1)%4 == dir then
+      dir = (dir+1)%4
+    elseif (checkedrot+2)%4 == dir then
+      dir = (dir-1)%4
+    else
+      return {
+        x = to_x,
+        y = to_y
+      }
+    end
+
+    dx, dy = 0, 0
+
+    if dir == 0 then dx = 1 elseif dir == 2 then dx = -1 end
+    if dir == 1 then dy = 1 elseif dir == 3 then dy = -1 end
+
+    return walkDivergedPath(to_x, to_y, to_x + dx, to_y + dy)
+  elseif cells[to_y][to_x].ctype == 30 then
+    if (checkedrot+1)%2 == dir%2 then
+      dir = (dir+1)%4
+    else
+      dir = (dir-1)%4
+    end
+
+    dx, dy = 0, 0
+
+    if dir == 0 then dx = 1 elseif dir == 2 then dx = -1 end
+    if dir == 1 then dy = 1 elseif dir == 3 then dy = -1 end
+
+    return walkDivergedPath(to_x, to_y, to_x + dx, to_y + dy)
+  elseif cells[to_y][to_x].ctype == 37 then
+    if checkedrot%2 == dir%2 then
+      return walkDivergedPath(to_x, to_y, to_x - dx, to_y - dy)
+    else
+      return {
+        x = to_x,
+        y = to_y
+      }
+    end
+  elseif cells[to_y][to_x].ctype == 38 then
+    return walkDivergedPath(to_x, to_y, to_x - dx, to_y - dy)
+  else
+    return {
+      x = to_x,
+      y = to_y
+    }
+  end
+end
+
+function addModdedWall(ctype)
+  for i=1,#walls,1 do
+    if walls[i] == ctype then
+      return
+    end
+  end
+  walls[#walls + 1] = ctype
+end
+
 function getCellLabelById(id)
   if initialCells[id] ~= nil then
     return "vanilla"
@@ -64,6 +133,12 @@ function addCell(label, texture, push, type, invisible)
 end
 
 function canPushCell(cx, cy, px, py, pushing)
+  if (not cx) or (not cy) then
+    return false
+  end
+  if cx < 1 or cx > width-1 or cy < 1 or cy > height-1 then
+    return false
+  end
   local cdir = cells[cy][cx].rot
   local pdir = cells[py][px].rot
   local ctype = cells[cy][cx].ctype

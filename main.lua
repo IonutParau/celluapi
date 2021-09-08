@@ -1004,7 +1004,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		if checkedtype == 1 or checkedtype == 13 or checkedtype == 27 or checkedtype == 41 or moddedMovers[checkedtype] ~= nil then
 			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				if isModdedBomb(lasttype) then
-					modsOnModEnemyDed(lasttype, cx, cy, checkedtype, cx, cy)
+					modsOnModEnemyDed(lasttype, cx, cy, checkedtype, cx, cy, checkedrot)
 				end
 				break
 			else
@@ -1038,7 +1038,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		or checkedtype > initialCellCount and not canPushCell(cx, cy, prevx, prevy, true) then
 			if checkedtype ~= -1 and checkedtype ~= 40 and reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				if isModdedBomb(lasttype) then
-					modsOnModEnemyDed(lasttype, cx, cy, checkedtype, prevx, prevy)
+					modsOnModEnemyDed(lasttype, cx, cy, checkedtype, prevx, prevy, checkedrot)
 				end
 				break
 			else
@@ -1071,7 +1071,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		elseif not ((checkedtype == 37 and checkedrot%2 == direction%2) or checkedtype == 38) then
 			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				if isModdedBomb(lasttype) then
-					modsOnModEnemyDed(lasttype, cx, cy, checkedtype, prevx, prevy)
+					modsOnModEnemyDed(lasttype, cx, cy, checkedtype, prevx, prevy, checkedrot)
 				end
 				break
 			else
@@ -1183,7 +1183,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				break
 			elseif not storedcell.protected and isModdedBomb(cells[cy][cx].ctype) then
 				if storedcell.ctype ~= 0 then
-					modsOnModEnemyDed(cells[cy][cx].ctype, cx, cy, storedcell.ctype, prevx, prevy)
+					modsOnModEnemyDed(cells[cy][cx].ctype, cx, cy, storedcell.ctype, prevx, prevy, storedcell.rot)
 					canPushCell(cx, cy, prevx, prevy, true)
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
@@ -1227,7 +1227,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 							cells[cy][cx].lastvars = {storedcell.lastvars[1],storedcell.lastvars[2],storedcell.lastvars[3]}
 						end
 					elseif isModdedBomb(storedcell.ctype) then
-						modsOnModEnemyDed(storedcell.ctype, prevx, prevy, cells[cx][cy].ctype, cx, cy)
+						modsOnModEnemyDed(storedcell.ctype, prevx, prevy, cells[cy][cx].ctype, cx, cy, cells[cy][cx].rot)
 					else
 						if cells[cy][cx].ctype == 23 then
 							cells[cy][cx].ctype = 12
@@ -1289,7 +1289,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 			if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or not cells[y][x].protected and (cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23)
 			or (cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 and cells[cy][cx].rot%2 == (direction+1)%2) or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
 				if isModdedTrash(cells[cy][cx].ctype) then
-					modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[prevy][prevx].ctype, prevx, prevy)
+					modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[prevy][prevx].ctype, prevx, prevy, cells[prevy][prevx].rot)
 				end
 				break
 			elseif cells[cy][cx].ctype == 15 and ((cells[cy][cx].rot+2)%4 == direction or (cells[cy][cx].rot+3)%4 == direction) then
@@ -1439,7 +1439,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or moddedBombs[checkedtype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
 					if reps ~= 1 then
 						if isModdedTrash(cells[cy][cx].ctype) then
-							modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[lastcy][lastcx].ctype, cells[lastcy], cells[lastcx])
+							modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[lastcy][lastcx].ctype, lastcy, lastcx, cells[lastcy][lastcx].rot)
 						end
 						cells[lastcy][lastcx].ctype = 0
 					end
@@ -1485,7 +1485,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 							if cells[cy][cx].ctype ~= 0 then
 								love.audio.play(destroysound)
 								if isModdedTrash(cells[frontcy][frontcx].ctype) then
-									modsOnTrashEat(cells[frontcy][frontcx].ctype, frontcx, frontcy, cells[cy][cx].ctype, cx, cy)
+									modsOnTrashEat(cells[frontcy][frontcx].ctype, frontcx, frontcy, cells[cy][cx].ctype, cx, cy, cells[cy][cx].rot)
 								end
 								if cells[frontcy][frontcx].ctype == 50 then
 									if frontcx < width-1 and (not cells[frontcy][frontcx+1].protected and cells[frontcy][frontcx+1].ctype ~= -1 and cells[frontcy][frontcx+1].ctype ~= 11 and not isModdedTrash(cells[frontcy][frontcx+1].ctype) and cells[frontcy][frontcx+1].ctype ~= 40 and cells[frontcy][frontcx+1].ctype ~= 50) then cells[frontcy][frontcx+1].ctype = 0 end
@@ -3243,15 +3243,10 @@ function love.load()
 			cells[y][x] = {}
 			chunks[math.floor(y/25)][math.floor(x/25)] = {}
 			if y == 0 or x == 0 or y == height-1 or x == width-1 then
-				if border == 1 then
-					initial[y][x] = {ctype = -1, rot = 0}
-				elseif border == 2 then
-					initial[y][x] = {ctype = 40, rot = 0}
-				elseif border == 3 then
-					initial[y][x] = {ctype = 11, rot = 0}
-				elseif border == 4 then
-					initial[y][x] = {ctype = 50, rot = 0}
-				end
+				initial[y][x] = {
+					ctype = walls[border],
+					rot = 0
+				}
 			else
 				initial[y][x].ctype = 0
 				initial[y][x].rot = 0
@@ -3285,7 +3280,7 @@ function love.update(dt)
 					volume = round((x-150)/5)/100
 					love.audio.setVolume(volume)
 				elseif y >= 265 and y <= 275 then
-					border = round((x-150)/(500/3))+1
+					border = round((x-150)/(500/(#walls-1)))+1
 				end
 			end
 		end
@@ -3354,10 +3349,11 @@ function love.update(dt)
 							placeables[y][x] = true
 						end
 					else
+						local original = CopyCell(x, y)
 						cells[y][x].ctype = currentstate
 						cells[y][x].rot = currentrot
-						modsOnPlace(currentstate, x, y, currentrot)
 						cells[y][x].lastvars = {x,y,currentrot}
+						modsOnPlace(currentstate, x, y, currentrot, original)
 						if isinitial then
 							initial[y][x].ctype = currentstate
 							initial[y][x].rot = currentrot
@@ -3392,8 +3388,10 @@ function love.update(dt)
 						placeables[y][x] = false
 					end
 				else
+					local original = CopyCell(x, y)
 					cells[y][x].ctype = 0
 					cells[y][x].rot = 0
+					modsOnPlace(0, x, y, 0, original)
 					if isinitial then
 						initial[y][x].ctype = 0
 						initial[y][x].rot = 0
@@ -3552,7 +3550,7 @@ function love.draw()
 		love.graphics.rectangle("fill",lerp(149,649,delay,true)*winxm,160*winym,2*winxm,10*winym)
 		love.graphics.rectangle("fill",lerp(149,649,(tpu-1)/9,true)*winxm,195*winym,2*winxm,10*winym)
 		love.graphics.rectangle("fill",lerp(149,649,volume,true)*winxm,230*winym,2*winxm,10*winym)
-		love.graphics.rectangle("fill",lerp(149,649,(border-1)/3,true)*winxm,265*winym,2*winxm,10*winym)
+		love.graphics.rectangle("fill",lerp(149,649,(border-1)/((#walls)-1),true)*winxm,265*winym,2*winxm,10*winym)
 		if dodebug then
 		love.graphics.polygon("fill",{180*winxm,378*winym ,177*winxm,380*winym ,190*winxm,393*winym ,193*winxm,390*winym})
 		love.graphics.polygon("fill",{190*winxm,378*winym ,193*winxm,380*winym ,180*winxm,393*winym ,177*winxm,390*winym}) end
@@ -3616,15 +3614,10 @@ function love.mousepressed(x,y,b)
 				if y%25 == 0 then chunks[math.floor(y/25)] = {} end
 				for x=0,newwidth+1 do
 					if x == 0 or x == newwidth+1 or y == 0 or y == newheight+1 then
-						if border == 1 then
-							initial[y][x] = {ctype = -1, rot = 0}
-						elseif border == 2 then
-							initial[y][x] = {ctype = 40, rot = 0}
-						elseif border == 3 then
-							initial[y][x] = {ctype = 11, rot = 0}
-						elseif border == 4 then
-							initial[y][x] = {ctype = 50, rot = 0}
-						end
+						initial[y][x] = {
+							ctype = walls[border],
+							rot = 0
+						}
 					elseif x >= width-1 or y >= height-1 then
 						initial[y][x] = {ctype = 0, rot = 0}
 					end
@@ -3892,6 +3885,7 @@ function love.mousepressed(x,y,b)
 			placecells = false
 		elseif x >= 725 and x <= 725+60 and y >= 25 and y <= 25+60*(winxm/winym) then
 			paused = not paused
+			modsOnUnpause()
 			isinitial = false
 			placecells = false
 		elseif x >= 725 and x <= 725+60 and y >= 25+75*(winxm/winym) and y <= 25+75*(winxm/winym)+60*(winxm/winym) and not isinitial then
