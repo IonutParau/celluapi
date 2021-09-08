@@ -4056,7 +4056,8 @@ function love.mousereleased()
 	placecells = true
 end
 
-function love.keypressed(key)
+function love.keypressed(key, scancode, isrepeat)
+	modsOnKeyPressed(key, scancode, isrepeat)
 	if typing then
 		if typing == 1 then
 			if tonumber(key) then

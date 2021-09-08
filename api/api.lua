@@ -92,14 +92,16 @@ function initMods()
 	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. " (") end
   for i=1,#mods,1 do
     local mod = require(mods[i])
-    mod.init()
+    if mod.init ~= nil then
+			mod.init()
+		end
 		if i == #mods then
 			love.window.setTitle(love.window.getTitle() .. mods[i])
 		else
 			love.window.setTitle(love.window.getTitle() .. mods[i] .. ",")
 		end
   end
-	love.window.setTitle(love.window.getTitle() .. ")")
+	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. ")") end
 end
 
 function modsCustomDraw()
@@ -118,6 +120,15 @@ function modsTick()
 			mod.tick()
 		end
   end
+end
+
+function modsOnKeyPressed(key, code, continous)
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onKeyPressed ~= nil then
+			mod.onKeyPressed(key, code, continous)
+		end
+	end
 end
 
 function modsOnModEnemyDed(id, x, y, killer, kx, ky)

@@ -3,5 +3,5 @@ function love.conf(t)
 	t.window.height = 600
 	t.window.resizable = true
 	t.window.icon = "icon.png"
-	t.window.title = "CelLua Machine"
+	t.window.title = "CelLuAPI Machine"
 end
