@@ -4057,7 +4057,6 @@ function love.mousereleased()
 end
 
 function love.keypressed(key, scancode, isrepeat)
-	modsOnKeyPressed(key, scancode, isrepeat)
 	if typing then
 		if typing == 1 then
 			if tonumber(key) then
@@ -4268,6 +4267,7 @@ function love.keypressed(key, scancode, isrepeat)
 			placecells = false
 		end
 	end
+	modsOnKeyPressed(key, scancode, isrepeat)
 end
 
 function love.wheelmoved(x,y)
