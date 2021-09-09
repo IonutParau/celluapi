@@ -62,8 +62,8 @@ end
 -- Encode the whole grid
 function encodeAP1()
   local str = "AP1;"
-  str = str .. decimalToHex(width-2) .. ';'
-  str = str .. decimalToHex(height-2) .. ';'
+  str = str .. decimalToHex(width) .. ';'
+  str = str .. decimalToHex(height) .. ';'
   local cellList = {
 
   }
@@ -104,8 +104,8 @@ end
 -- Decode the whole grid
 function DecodeAP1(str)
   local code = split(str, ';')
-  width = tonumber(code[2], 16)+2
-  height = tonumber(code[3], 16)+2
+  width = tonumber(code[2], 16)
+  height = tonumber(code[3], 16)
   code[#code] = nil
 
   local cellList = {}

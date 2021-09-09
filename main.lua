@@ -3710,8 +3710,8 @@ function love.mousepressed(x,y,b)
 				DecodeAP1(love.system.getClipboardText())
 				inmenu = false
 				placecells = false
-				newwidth = width
-				newheight = height
+				newwidth = width-2
+				newheight = height-2
 				love.audio.play(beep)
 				undocells = nil
 			else
