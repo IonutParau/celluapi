@@ -1592,13 +1592,20 @@ function UpdateMirrors()
 		while x < width do
 			if GetChunk(x,y).hasmirror then
 				if not cells[y][x].updated and (cells[y][x].ctype == 14 and (cells[y][x].rot == 0 or cells[y][x].rot == 2) or cells[y][x].ctype == 55) then
-					if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= 50 and cells[y][x-1].ctype ~= 55 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 40 and (cells[y][x-1].ctype ~= 14 or cells[y][x-1].rot%2 == 1)
-					and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= 50 and cells[y][x+1].ctype ~= 55 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 40 and (cells[y][x+1].ctype ~= 14 or cells[y][x+1].rot%2 == 1) then
+					local canPushLeft = true
+					local canPushRight = true
+					if cells[y][x-1] ~= nil then
 						if cells[y][x-1].ctype > initialCellCount then
-							if not canPushCell(cells[y][x-1].ctype, x-1, y, x+1, y, true) then
-								return
-							end
+							canPushLeft = canPushCell(x-1, y, x, y, true)
 						end
+					end
+					if cells[y][x+1] ~= nil then
+						if cells[y][x+1].ctype > initialCellCount then
+							canPushRight = canPushCell(x+1, y, x, y, true)
+						end
+					end
+					if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= 50 and cells[y][x-1].ctype ~= 55 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 40 and (cells[y][x-1].ctype ~= 14 or cells[y][x-1].rot%2 == 1) and canPushLeft
+					and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= 50 and cells[y][x+1].ctype ~= 55 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 40 and (cells[y][x+1].ctype ~= 14 or cells[y][x+1].rot%2 == 1) and canPushRight then
 						local oldcell = CopyCell(x-1,y)
 						cells[y][x-1] = CopyCell(x+1,y)
 						cells[y][x+1] = oldcell
@@ -1618,14 +1625,21 @@ function UpdateMirrors()
 	while x < width do
 		while y < height do
 			if GetChunk(x,y).hasmirror then
+				local canPushUp = true
+				local canPushDown = true
+				if cells[y-1] ~= nil then
+					if cells[y-1][x].ctype > initialCellCount then
+						canPushUp = canPushCell(x, y-1, x, y, true)
+					end
+				end
+				if cells[y+1] ~= nil then
+					if cells[y+1][x].ctype > initialCellCount then
+						canPushDown = canPushCell(x, y+1, x, y, true)
+					end
+				end
 				if not cells[y][x].updated and (cells[y][x].ctype == 14 and (cells[y][x].rot == 1 or cells[y][x].rot == 3) or cells[y][x].ctype == 55) then
 					if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= 55 and cells[y-1][x].ctype ~= 50 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 40 and (cells[y-1][x].ctype ~= 14 or cells[y-1][x].rot%2 == 0)
-					and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= 55 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 40 and (cells[y+1][x].ctype ~= 14 or cells[y+1][x].rot%2 == 0) then
-						if cells[y][y-1].ctype > initialCellCount then
-							if not canPushCell(cells[y][x-1].ctype, x, y-1, x, y+1, true) then
-								return
-							end
-						end
+					and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= 55 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 40 and (cells[y+1][x].ctype ~= 14 or cells[y+1][x].rot%2 == 0) and canPushUp and canPushDown then
 						local oldcell = CopyCell(x,y-1)
 						cells[y-1][x] = CopyCell(x,y+1)
 						cells[y+1][x] = oldcell
@@ -3660,11 +3674,11 @@ function love.mousepressed(x,y,b)
 			RefreshChunks()
 			typing = false
 		elseif x > 470 and x < 530 then
-			EncodeK2()
+			encodeAP1()
 			love.audio.play(beep)
 			typing = false
 		elseif x > 570 and x < 630 then
-			if string.sub(love.system.getClipboardText(),1,2) == "V3" then
+			if string.sub(love.system.getClipboardText(),1,3) == "V3;" then
 				DecodeV3(love.system.getClipboardText())
 				inmenu = false
 				placecells = false
@@ -3672,7 +3686,7 @@ function love.mousepressed(x,y,b)
 				newheight = height-2
 				love.audio.play(beep)
 				undocells = nil
-			elseif string.sub(love.system.getClipboardText(),1,2) == "K1" then
+			elseif string.sub(love.system.getClipboardText(),1,3) == "K1;" then
 				DecodeK1(love.system.getClipboardText())
 				inmenu = false
 				placecells = false
@@ -3680,12 +3694,20 @@ function love.mousepressed(x,y,b)
 				newheight = height-2
 				love.audio.play(beep)
 				undocells = nil
-			elseif string.sub(love.system.getClipboardText(),1,2) == "K2" then
+			elseif string.sub(love.system.getClipboardText(),1,3) == "K2;" then
 				DecodeK2(love.system.getClipboardText())
 				inmenu = false
 				placecells = false
 				newwidth = width-2
 				newheight = height-2
+				love.audio.play(beep)
+				undocells = nil
+			elseif string.sub(love.system.getClipboardText(),1,4) == "AP1;" then
+				DecodeAP1(love.system.getClipboardText())
+				inmenu = false
+				placecells = false
+				newwidth = width
+				newheight = height
 				love.audio.play(beep)
 				undocells = nil
 			else

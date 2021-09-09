@@ -118,11 +118,9 @@ function addCell(label, texture, push, ctype, invisible, index)
   ctype = ctype or "normal"
   if ctype == "mover" then
     moddedMovers[cellID] = true
-  end
-  if ctype == "enemy" then
+  elseif ctype == "enemy" then
     moddedBombs[cellID] = true
-  end
-  if ctype == "trash" then
+  elseif ctype == "trash" then
     moddedTrash[cellID] = true
   end
   for k,v in pairs(tex) do
@@ -146,7 +144,7 @@ function canPushCell(cx, cy, px, py, pushing)
   local cdir = cells[cy][cx].rot
   local pdir = cells[py][px].rot
   local ctype = cells[cy][cx].ctype
-  if not pushabilitySheet[ctype] then
+  if pushabilitySheet[ctype] == nil then
     return false
   end
   return pushabilitySheet[ctype](cx, cy, cdir, px, py, pdir, pushing)
