@@ -2,11 +2,41 @@ cm = require "api/cell_management"
 audio = require "api/audio"
 save = require "api/save"
 
+config = {}
+
+function loadConfig()
+	local lines = {}
+	for line in love.filesystem.lines("api.config") do
+		table.insert(lines, line)
+	end
+	for i=1,#lines,1 do
+		local code = split(lines[i], '=')
+		config[code[1]] = code[2]
+	end
+end
+
 mods = {}
 initialCellCount = 0
 initialCells = {}
-for line in love.filesystem.lines('mods.txt') do 
-  mods[#mods+1] = line
+loadConfig()
+if config['auto_detect_mods'] == 'true' then
+	local files = {}
+	local e = ""
+	for _, file in pairs(love.filesystem.getDirectoryItems('')) do
+		local fileSplit = split(file, '.')
+		if tostring(fileSplit[#fileSplit]) == 'lua' then
+			files[#files+1] = fileSplit[1]
+		end
+	end
+	for _, mod in pairs(files) do
+		if mod ~= 'main' and mod ~= 'conf' then
+			mods[#mods+1] = mod	
+		end
+	end
+else
+	for line in love.filesystem.lines('mods.txt') do 
+		mods[#mods+1] = line
+	end
 end
 
 function DoModded(id, x, y, rot)

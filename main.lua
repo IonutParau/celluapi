@@ -3674,7 +3674,11 @@ function love.mousepressed(x,y,b)
 			RefreshChunks()
 			typing = false
 		elseif x > 470 and x < 530 then
-			encodeAP1()
+			if config['use_k2'] == 'true' then
+				EncodeK2()
+			else
+				encodeAP1()
+			end
 			love.audio.play(beep)
 			typing = false
 		elseif x > 570 and x < 630 then
