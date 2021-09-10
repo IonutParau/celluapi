@@ -198,6 +198,24 @@ function modsOnUnpause()
 	end
 end
 
+function modsOnMousePressed(x, y, button, istouch, presses)
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onMousePressed ~= nil then
+			mod.onMousePressed(x, y, button, istouch, presses)
+		end
+	end
+end
+
+function modsOnMouseReleased(x, y, button, istouch, presses)
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onMouseReleased ~= nil then
+			mod.onMouseReleased(x, y, button, istouch, presses)
+		end
+	end
+end
+
 function isModdedTrash(id)
 	return (moddedTrash[id] ~= nil)
 end

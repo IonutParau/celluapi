@@ -991,7 +991,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		local checkedprot = cells[cy][cx].projectedprot
 		local moddedCanPush = false
 		if checkedtype > initialCellCount then
-			moddedCanPush = canPushCell(cx, cy, prevx, prevy, true)
+			moddedCanPush = canPushCell(cx, cy, prevx, prevy, "push")
 		end
 		if checkedtype == 1 or checkedtype == 13 or checkedtype == 27 or checkedtype == 41 or moddedMovers[checkedtype] ~= nil then
 			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
@@ -1027,7 +1027,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		or checkedtype == 51 and direction ~= checkedrot 
 		or checkedtype == 52 and (direction ~= checkedrot and direction ~= (checkedrot-1)%4)
 		or checkedtype == 53 and direction == (checkedrot+2)%4
-		or checkedtype > initialCellCount and not canPushCell(cx, cy, prevx, prevy, true) then
+		or checkedtype > initialCellCount and not canPushCell(cx, cy, prevx, prevy, "push") then
 			if checkedtype ~= -1 and checkedtype ~= 40 and reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype)) then
 				if isModdedBomb(lasttype) then
 					modsOnModEnemyDed(lasttype, cx, cy, cells[prevy][prevx], cx, cy)
@@ -1127,7 +1127,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					if isModdedTrash(cells[cy][cx].ctype) then
 						modsOnTrashEat(cells[cy][cx].ctype, cx, cy, storedcell, prevx, prevy)
 					end
-					canPushCell(cx, cy, prevx, prevy, true)
+					canPushCell(cx, cy, prevx, prevy, "push")
 					if cells[cy][cx].ctype == 50 then
 						if cx < width-1 and (not cells[cy][cx+1].protected and cells[cy][cx+1].ctype ~= -1 and cells[cy][cx+1].ctype ~= 11 and not isModdedTrash(cells[cy][cx+1].ctype) and cells[cy][cx+1].ctype ~= 40 and cells[cy][cx+1].ctype ~= 50) then cells[cy][cx+1].ctype = 0 end
 						if cx > 0 and (not cells[cy][cx-1].protected and cells[cy][cx-1].ctype ~= -1 and cells[cy][cx-1].ctype ~= 11 and not isModdedTrash(cells[cy][cx-1].ctype) and cells[cy][cx-1].ctype ~= 40 and cells[cy][cx-1].ctype ~= 50) then cells[cy][cx-1].ctype = 0 end
@@ -1176,7 +1176,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 			elseif not storedcell.protected and isModdedBomb(cells[cy][cx].ctype) then
 				if storedcell.ctype ~= 0 then
 					modsOnModEnemyDed(cells[cy][cx].ctype, cx, cy, storedcell, prevx, prevy)
-					canPushCell(cx, cy, prevx, prevy, true)
+					canPushCell(cx, cy, prevx, prevy, "push")
 					cells[cy][cx].ctype = 0
 					love.audio.play(destroysound)
 					enemyparticles:setPosition(cx*20,cy*20)
@@ -1230,7 +1230,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					love.audio.play(destroysound)
 					enemyparticles:setPosition(cx*20,cy*20)
 					enemyparticles:emit(50)
-					canPushCell(px, py, 0, 0, true)
+					canPushCell(px, py, 0, 0, "push")
 					break
 				else
 					local oldcell = CopyCell(cx,cy)
@@ -1436,7 +1436,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 						cells[lastcy][lastcx].ctype = 0
 					end
 					break
-				elseif cells[cy][cx].ctype > initialCellCount and not canPushCell(cx, cy, lastcx, lastcy, false) then
+				elseif cells[cy][cx].ctype > initialCellCount and not canPushCell(cx, cy, lastcx, lastcy, "pull") then
 					if reps ~= 1 then
 						cells[lastcy][lastcx].ctype = 0
 					end
@@ -1588,12 +1588,12 @@ function UpdateMirrors()
 					local canPushRight = true
 					if cells[y][x-1] ~= nil then
 						if cells[y][x-1].ctype > initialCellCount then
-							canPushLeft = canPushCell(x-1, y, x, y, true)
+							canPushLeft = canPushCell(x-1, y, x, y, "mirror")
 						end
 					end
 					if cells[y][x+1] ~= nil then
 						if cells[y][x+1].ctype > initialCellCount then
-							canPushRight = canPushCell(x+1, y, x, y, true)
+							canPushRight = canPushCell(x+1, y, x, y, "mirror")
 						end
 					end
 					if isModdedBomb(cells[y][x-1].ctype) or isModdedTrash(cells[y][x-1].ctype) then
@@ -1602,8 +1602,8 @@ function UpdateMirrors()
 					if isModdedBomb(cells[y][x+1].ctype) or isModdedTrash(cells[y][x+1].ctype) then
 						canPushRight = false
 					end
-					if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= 50 and cells[y][x-1].ctype ~= 55 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 40 and (cells[y][x-1].ctype ~= 14 or cells[y][x-1].rot%2 == 1) and canPushLeft
-					and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= 50 and cells[y][x+1].ctype ~= 55 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 40 and (cells[y][x+1].ctype ~= 14 or cells[y][x+1].rot%2 == 1) and canPushRight then
+					if (cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= 50 and cells[y][x-1].ctype ~= 55 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 40 and (cells[y][x-1].ctype ~= 14 or cells[y][x-1].rot%2 == 1) and canPushLeft
+					and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= 50 and cells[y][x+1].ctype ~= 55 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 40 and (cells[y][x+1].ctype ~= 14 or cells[y][x+1].rot%2 == 1) and canPushRight) or config['mirror_restrictions'] ~= 'true' then
 						local oldcell = CopyCell(x-1,y)
 						cells[y][x-1] = CopyCell(x+1,y)
 						cells[y][x+1] = oldcell
@@ -1627,23 +1627,27 @@ function UpdateMirrors()
 				local canPushDown = true
 				if cells[y-1] ~= nil then
 					if cells[y-1][x].ctype > initialCellCount then
-						canPushUp = canPushCell(x, y-1, x, y, true)
+						canPushUp = canPushCell(x, y-1, x, y, "mirror")
 					end
 				end
 				if cells[y+1] ~= nil then
 					if cells[y+1][x].ctype > initialCellCount then
-						canPushDown = canPushCell(x, y+1, x, y, true)
+						canPushDown = canPushCell(x, y+1, x, y, "mirror")
 					end
 				end
-				if isModdedBomb(cells[y][x-1].ctype) or isModdedTrash(cells[y][x-1].ctype) then
-					canPushLeft = false
+				if cells[y-1] ~= nil then
+					if isModdedBomb(cells[y-1][x].ctype) or isModdedTrash(cells[y-1][x].ctype) then
+						canPushUp = false
+					end
 				end
-				if isModdedBomb(cells[y][x+1].ctype) or isModdedTrash(cells[y][x+1].ctype) then
-					canPushRight = false
+				if cells[y+1] ~= nil then
+					if isModdedBomb(cells[y+1][x].ctype) or isModdedTrash(cells[y+1][x].ctype) then
+						canPushDown = false
+					end
 				end
 				if not cells[y][x].updated and (cells[y][x].ctype == 14 and (cells[y][x].rot == 1 or cells[y][x].rot == 3) or cells[y][x].ctype == 55) then
 					if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= 55 and cells[y-1][x].ctype ~= 50 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 40 and (cells[y-1][x].ctype ~= 14 or cells[y-1][x].rot%2 == 0)
-					and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= 55 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 40 and (cells[y+1][x].ctype ~= 14 or cells[y+1][x].rot%2 == 0) and canPushUp and canPushDown then
+					and cells[y+1][x].ctype ~= 11 and cells[y+1][x].ctype ~= 55 and cells[y+1][x].ctype ~= -1 and cells[y+1][x].ctype ~= 40 and (cells[y+1][x].ctype ~= 14 or cells[y+1][x].rot%2 == 0) and canPushUp and canPushDown or config['mirror_restrictions'] ~= 'true' then
 						local oldcell = CopyCell(x,y-1)
 						cells[y-1][x] = CopyCell(x,y+1)
 						cells[y+1][x] = oldcell
@@ -2364,8 +2368,11 @@ function UpdateGears()
 								if isModdedBomb(cells[y+cy][x+cx].ctype) or isModdedTrash(cells[y+cy][x+cx].ctype) then
 									jammed = true
 								else
-									jammed = not canPushCell(x+cx, y+cy, x, y, true)
+									jammed = not canPushCell(x+cx, y+cy, x, y, "gear")
 								end
+							end
+							if config['gears_restrictions'] ~= 'true' then
+								jammed = false
 							end
 						end
 					end
@@ -2429,8 +2436,11 @@ function UpdateGears()
 								if isModdedBomb(cells[y+cy][x+cx].ctype) or isModdedTrash(cells[y+cy][x+cx].ctype) then
 									jammed = true
 								else
-									jammed = not canPushCell(x+cx, y+cy, x, y, true)
+									jammed = not canPushCell(x+cx, y+cy, x, y, "gear")
 								end
+							end
+							if config['gears_restrictions'] ~= 'true' then
+								jammed = false
 							end
 						end
 					end
@@ -3621,7 +3631,7 @@ function love.draw()
 	modsCustomDraw()
 end
 
-function love.mousepressed(x,y,b)
+function love.mousepressed(x,y,b, istouch, presses)
 	x = x/winxm
 	y = y/winym
 	if inmenu and y > 420 and y < 480 then
@@ -4091,13 +4101,15 @@ function love.mousepressed(x,y,b)
 			undocells = nil
 		end
 	end
+	modsOnMousePressed(x, y, b, istouch, presses)
 end
 
-function love.mousereleased()
+function love.mousereleased(x, y, button, istouch, presses)
 	if placecells then
 		canundo = true
 	end
 	placecells = true
+	modsOnMouseReleased(x, y, button, istouch, presses)
 end
 
 function love.keypressed(key, scancode, isrepeat)
