@@ -788,15 +788,7 @@ function DecodeK2(code)
 	for y=0,height-1 do
 		for x=0,width-1 do
 			if y == 0 or x == 0 or y == height-1 or x == width-1 then
-				if border == 1 then
-					initial[y][x].ctype = -1
-				elseif border == 2 then
-					initial[y][x].ctype = 40
-				elseif border == 3 then
-					initial[y][x].ctype = 11
-				elseif border == 4 then
-					initial[y][x].ctype = 50
-				end
+				initial[y][x].ctype = walls[border]
 			end
 			cells[y][x].ctype = initial[y][x].ctype
 			cells[y][x].rot = initial[y][x].rot
@@ -2356,6 +2348,9 @@ function UpdateGears()
 							if cells[y+cy][x+cx].ctype == -1 or cells[y+cy][x+cx].ctype == 40 or cells[y+cy][x+cx].ctype == 17 or cells[y+cy][x+cx].ctype == 18 or cells[y+cy][x+cx].ctype == 11 or cells[y+cy][x+cx].ctype == 50 then
 								jammed = true
 							end
+							if cells[y+cy][x+cx].ctype > initialCellCount then
+								jammed = not canPushCell(x+cx, y+cy, x, y, true)
+							end
 						end
 					end
 					if not jammed then
@@ -2413,6 +2408,9 @@ function UpdateGears()
 							cy = math.floor(i/3)-1
 							if cells[y+cy][x+cx].ctype == -1 or cells[y+cy][x+cx].ctype == 40 or cells[y+cy][x+cx].ctype == 17 or cells[y+cy][x+cx].ctype == 18 or cells[y+cy][x+cx].ctype == 11 or cells[y+cy][x+cx].ctype == 50 then
 								jammed = true
+							end
+							if cells[y+cy][x+cx].ctype > initialCellCount then
+								jammed = not canPushCell(x+cx, y+cy, x, y, true)
 							end
 						end
 					end

@@ -142,7 +142,23 @@ function DecodeAP1(str)
 			i = i + 1
       cells[y][x].ctype = cellList[i].id
       cells[y][x].rot = cellList[i].rot
+      initial[y][x].ctype = cellList[i].id
+      initial[y][x].rot = cellList[i].rot
       placeables[y][x] = cellList[i].placeable
 		end
 	end
+  bgsprites = love.graphics.newSpriteBatch(tex[0])
+  for y=0,height-1 do
+		for x=0,width-1 do
+			if y == 0 or x == 0 or y == height-1 or x == width-1 then
+				initial[y][x].ctype = walls[border]
+			end
+			cells[y][x].ctype = initial[y][x].ctype
+			cells[y][x].rot = initial[y][x].rot
+			cells[y][x].lastvars = {x,y,cells[y][x].rot}
+			cells[y][x].testvar = ""
+			bgsprites:add((x-1)*20,(y-1)*20)
+		end
+	end
+  RefreshChunks()
 end
