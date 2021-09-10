@@ -1596,6 +1596,12 @@ function UpdateMirrors()
 							canPushRight = canPushCell(x+1, y, x, y, true)
 						end
 					end
+					if isModdedBomb(cells[y][x-1].ctype) or isModdedTrash(cells[y][x-1].ctype) then
+						canPushLeft = false
+					end
+					if isModdedBomb(cells[y][x+1].ctype) or isModdedTrash(cells[y][x+1].ctype) then
+						canPushRight = false
+					end
 					if cells[y][x-1].ctype ~= 11 and cells[y][x-1].ctype ~= 50 and cells[y][x-1].ctype ~= 55 and cells[y][x-1].ctype ~= -1 and cells[y][x-1].ctype ~= 40 and (cells[y][x-1].ctype ~= 14 or cells[y][x-1].rot%2 == 1) and canPushLeft
 					and cells[y][x+1].ctype ~= 11 and cells[y][x+1].ctype ~= 50 and cells[y][x+1].ctype ~= 55 and cells[y][x+1].ctype ~= -1 and cells[y][x+1].ctype ~= 40 and (cells[y][x+1].ctype ~= 14 or cells[y][x+1].rot%2 == 1) and canPushRight then
 						local oldcell = CopyCell(x-1,y)
@@ -1628,6 +1634,12 @@ function UpdateMirrors()
 					if cells[y+1][x].ctype > initialCellCount then
 						canPushDown = canPushCell(x, y+1, x, y, true)
 					end
+				end
+				if isModdedBomb(cells[y][x-1].ctype) or isModdedTrash(cells[y][x-1].ctype) then
+					canPushLeft = false
+				end
+				if isModdedBomb(cells[y][x+1].ctype) or isModdedTrash(cells[y][x+1].ctype) then
+					canPushRight = false
 				end
 				if not cells[y][x].updated and (cells[y][x].ctype == 14 and (cells[y][x].rot == 1 or cells[y][x].rot == 3) or cells[y][x].ctype == 55) then
 					if cells[y-1][x].ctype ~= 11 and cells[y-1][x].ctype ~= 55 and cells[y-1][x].ctype ~= 50 and cells[y-1][x].ctype ~= -1 and cells[y-1][x].ctype ~= 40 and (cells[y-1][x].ctype ~= 14 or cells[y-1][x].rot%2 == 0)
@@ -2349,7 +2361,11 @@ function UpdateGears()
 								jammed = true
 							end
 							if cells[y+cy][x+cx].ctype > initialCellCount then
-								jammed = not canPushCell(x+cx, y+cy, x, y, true)
+								if isModdedBomb(cells[y+cy][x+cx].ctype) or isModdedTrash(cells[y+cy][x+cx].ctype) then
+									jammed = true
+								else
+									jammed = not canPushCell(x+cx, y+cy, x, y, true)
+								end
 							end
 						end
 					end
@@ -2410,7 +2426,11 @@ function UpdateGears()
 								jammed = true
 							end
 							if cells[y+cy][x+cx].ctype > initialCellCount then
-								jammed = not canPushCell(x+cx, y+cy, x, y, true)
+								if isModdedBomb(cells[y+cy][x+cx].ctype) or isModdedTrash(cells[y+cy][x+cx].ctype) then
+									jammed = true
+								else
+									jammed = not canPushCell(x+cx, y+cy, x, y, true)
+								end
 							end
 						end
 					end
