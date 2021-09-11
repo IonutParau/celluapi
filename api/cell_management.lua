@@ -5,6 +5,13 @@ moddedTrash = {}
 cellsForIDManagement = {}
 cellLabels = {}
 
+function calculateScreenPosition(x, y)
+  return {
+    x = math.floor(x*zoom-offx+zoom/2),
+    y = math.floor(y*zoom-offy+zoom/2)
+  }
+end
+
 function walkDivergedPath(from_x, from_y, to_x, to_y)
   local dx, dy = from_x - to_x, from_y - to_y
 
