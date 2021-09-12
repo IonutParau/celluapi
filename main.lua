@@ -1175,9 +1175,10 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				break
 			elseif not storedcell.protected and isModdedBomb(cells[cy][cx].ctype) then
 				if storedcell.ctype ~= 0 then
-					modsOnModEnemyDed(cells[cy][cx].ctype, cx, cy, storedcell, prevx, prevy)
-					canPushCell(cx, cy, prevx, prevy, "push")
+					local bombID = cells[cy][cx].ctype
 					cells[cy][cx].ctype = 0
+					canPushCell(cx, cy, prevx, prevy, "push")
+					modsOnModEnemyDed(bombID, cx, cy, storedcell, prevx, prevy)
 					love.audio.play(destroysound)
 					enemyparticles:setPosition(cx*20,cy*20)
 					enemyparticles:emit(50)
@@ -3472,6 +3473,7 @@ function love.draw()
 			if dodebug then
 				love.graphics.print(tostring(cells[y][x].testvar),x*zoom-offx+zoom/2,y*zoom-offy+zoom/2)
 			end
+			modsOnCellDraw(cells[y][x].ctype, x, y, cells[y][x].rot)
 		end
 	end
 	if currentstate == -2 then
@@ -3701,6 +3703,7 @@ function love.mousepressed(x,y,b, istouch, presses)
 			love.audio.play(beep)
 			RefreshChunks()
 			typing = false
+			modsOnClear()
 		elseif x > 470 and x < 530 then
 			if config['use_k2'] == 'true' then
 				EncodeK2()
@@ -3953,15 +3956,11 @@ function love.mousepressed(x,y,b, istouch, presses)
 				if y%25 == 0 then chunks[math.floor(y/25)] = {} end
 				for x=0,newwidth+1 do
 					if x == 0 or x == newwidth+1 or y == 0 or y == newheight+1 then
-						if border == 1 then
-							initial[y][x] = {ctype = -1, rot = 0}
-						elseif border == 2 then
-							initial[y][x] = {ctype = 40, rot = 0}
-						elseif border == 3 then
-							initial[y][x] = {ctype = 11, rot = 0}
-						elseif border == 4 then
-							initial[y][x] = {ctype = 50, rot = 0}
-						end
+						initial[y][x] = {
+							ctype = walls[border],
+							rot = 0,
+							lastvars = {x, y, 0}
+						}
 					elseif x >= width-1 or y >= height-1 then
 						initial[y][x] = {ctype = 0, rot = 0}
 					end
@@ -3987,6 +3986,7 @@ function love.mousepressed(x,y,b, istouch, presses)
 			isinitial = true
 			subtick = subtick and 0
 			RefreshChunks()
+			modsOnReset()
 		elseif x >= 725-150 and x <= 725-15 and y >= 25+75*(winxm/winym) and y <= 25+75*(winxm/winym)+60*(winxm/winym) and not isinitial then
 			for y=0,height-1 do
 				for x=0,width-1 do

@@ -216,6 +216,33 @@ function modsOnMouseReleased(x, y, button, istouch, presses)
 	end
 end
 
+function modsOnCellDraw(id, x, y, dir)
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onCellDraw ~= nil then
+			mod.onCellDraw(id, x, y, dir)
+		end
+	end
+end
+
+function modsOnReset()
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onReset ~= nil then
+			mod.onReset()
+		end
+	end
+end
+
+function modsOnClear()
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onClear ~= nil then
+			mod.onClear()
+		end
+	end
+end
+
 function isModdedTrash(id)
 	return (moddedTrash[id] ~= nil)
 end
