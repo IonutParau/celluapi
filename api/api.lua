@@ -192,11 +192,11 @@ function modsOnTrashEat(id, x, y, food, fx, fy)
 	end
 end
 
-function modsOnPlace(id, x, y, rot, original)
+function modsOnPlace(id, x, y, rot, original, originalInitial)
 	for i=1,#mods,1 do
 		local mod = require(mods[i])
 		if mod.onPlace ~= nil then
-			mod.onPlace(id, x, y, rot, original)
+			mod.onPlace(id, x, y, rot, original, originalInitial)
 		end
 	end
 end

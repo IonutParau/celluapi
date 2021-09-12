@@ -3398,13 +3398,14 @@ function love.update(dt)
 						cells[y][x].ctype = currentstate
 						cells[y][x].rot = currentrot
 						cells[y][x].lastvars = {x,y,currentrot}
+						local originalInitial = CopyTable(initial[y][x])
 						if isinitial then
 							initial[y][x].ctype = currentstate
 							initial[y][x].rot = currentrot
 							initial[y][x].lastvars = {x,y,currentrot}
 						end
-						modsOnPlace(currentstate, x, y, currentrot, original)
 						SetChunk(x,y,currentstate)
+						modsOnPlace(currentstate, x, y, currentrot, original, originalInitial)
 					end
 				end
 			end
@@ -3436,12 +3437,13 @@ function love.update(dt)
 					local original = CopyCell(x, y)
 					cells[y][x].ctype = 0
 					cells[y][x].rot = 0
+					local originalInitial = CopyTable(cells[y][x])
 					if isinitial then
 						initial[y][x].ctype = 0
 						initial[y][x].rot = 0
 					end
-					modsOnPlace(0, x, y, 0, original)
 					SetChunk(x,y,currentstate)
+					modsOnPlace(0, x, y, 0, original, oriignalInitial)
 				end
 			end
 		end
