@@ -1231,7 +1231,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					love.audio.play(destroysound)
 					enemyparticles:setPosition(cx*20,cy*20)
 					enemyparticles:emit(50)
-					canPushCell(px, py, 0, 0, "push")
+					canPushCell(prevx, prevy, 0, 0, "push")
 					break
 				else
 					local oldcell = CopyCell(cx,cy)
