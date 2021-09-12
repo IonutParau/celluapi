@@ -4204,6 +4204,7 @@ function love.keypressed(key, scancode, isrepeat)
 		elseif key == "space" then
 			paused = not paused
 			isinitial = false
+			modsOnUnpause()
 		elseif key == "f" then
 			for y=0,height-1 do
 				for x=0,width-1 do
