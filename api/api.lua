@@ -273,6 +273,15 @@ function modsOnSetInitial()
 	end
 end
 
+function modsOnMouseScroll(x, y)
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onMouseScroll ~= nil then
+			mod.onMouseScroll(x, y)
+		end
+	end
+end
+
 function isModdedTrash(id)
 	return (moddedTrash[id] ~= nil)
 end

@@ -4353,4 +4353,5 @@ function love.wheelmoved(x,y)
 			end
 		end
 	end
+	modsOnMouseScroll(x, y)
 end
