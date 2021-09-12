@@ -135,6 +135,18 @@ function initMods()
 	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. ")") end
 end
 
+function CopyTable(table)
+	local copy = {}
+	for k, v in pairs(table) do
+		if type(v) == "table" then
+			copy[k] = CopyTable(v)
+		else
+			copy[k] = v
+		end
+	end
+	return copy
+end
+
 function modsCustomDraw()
   for i=1,#mods,1 do
     local mod = require(mods[i])
@@ -248,6 +260,15 @@ function modsOnMove(id, x, y, dir)
 		local mod = require(mods[i])
 		if mod.onMove ~= nil then
 			mod.onMove(id, x, y, dir)
+		end
+	end
+end
+
+function modsOnSetInitial()
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onSetInitial ~= nil then
+			mod.onSetInitial()
 		end
 	end
 end

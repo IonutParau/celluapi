@@ -3398,12 +3398,12 @@ function love.update(dt)
 						cells[y][x].ctype = currentstate
 						cells[y][x].rot = currentrot
 						cells[y][x].lastvars = {x,y,currentrot}
-						modsOnPlace(currentstate, x, y, currentrot, original)
 						if isinitial then
 							initial[y][x].ctype = currentstate
 							initial[y][x].rot = currentrot
 							initial[y][x].lastvars = {x,y,currentrot}
 						end
+						modsOnPlace(currentstate, x, y, currentrot, original)
 						SetChunk(x,y,currentstate)
 					end
 				end
@@ -3436,11 +3436,12 @@ function love.update(dt)
 					local original = CopyCell(x, y)
 					cells[y][x].ctype = 0
 					cells[y][x].rot = 0
-					modsOnPlace(0, x, y, 0, original)
 					if isinitial then
 						initial[y][x].ctype = 0
 						initial[y][x].rot = 0
 					end
+					modsOnPlace(0, x, y, 0, original)
+					SetChunk(x,y,currentstate)
 				end
 			end
 		end
@@ -4002,6 +4003,7 @@ function love.mousepressed(x,y,b, istouch, presses)
 			isinitial = true
 			subtick = subtick and 0
 			RefreshChunks()
+			modsOnSetInitial()
 		elseif x >= 755 and y >= 475-80*(winxm/winym) and x <= 795 and y <= 475-40*(winxm/winym) then
 			if pasting then
 				local lastcop = {}
