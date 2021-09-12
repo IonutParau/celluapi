@@ -951,7 +951,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 	replacetype = replacetype or 0
 	replacerot = replacerot or 0
 	replaceupdated = replaceupdated or false
-	replacelastvars = replacelastvars or {cx,cy,direction}
+	replacelastvars = replacelastvars or {cx,cy,dir}
 	replaceprot = replaceprot or false
 	updateforces = (updateforces == nil and true) or updateforces	--if it's nothing, set to true. this lets it have a default value without overwriting false with true
 	dontpull = (dontpull == nil and true) or dontpull
@@ -1430,7 +1430,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				elseif direction == 1 then
 					cy = cy - 1
 				end
-				if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or moddedBombs[checkedtype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
+				if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or moddedBombs[cells[cy][cx].ctype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
 					if reps ~= 1 then
 						if isModdedTrash(cells[cy][cx].ctype) then
 							modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[lastcy][lastcx], lastcy, lastcx)
@@ -3443,7 +3443,7 @@ function love.update(dt)
 						initial[y][x].rot = 0
 					end
 					SetChunk(x,y,currentstate)
-					modsOnPlace(0, x, y, 0, original, oriignalInitial)
+					modsOnPlace(0, x, y, 0, original, originalInitial)
 				end
 			end
 		end
