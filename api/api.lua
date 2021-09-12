@@ -243,6 +243,15 @@ function modsOnClear()
 	end
 end
 
+function modsOnMove(id, x, y, dir)
+	for i=1,#mods,1 do
+		local mod = require(mods[i])
+		if mod.onMove ~= nil then
+			mod.onMove(id, x, y, dir)
+		end
+	end
+end
+
 function isModdedTrash(id)
 	return (moddedTrash[id] ~= nil)
 end

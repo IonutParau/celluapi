@@ -1248,6 +1248,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				end
 			end
 			SetChunk(cx,cy,cells[cy][cx].ctype)
+			modsOnMove(cells[cy][cx].ctype, cx, cy, cells[cy][cx].rot)
 		until storedcell.ctype == 0
 	else
 		updatekey = updatekey + 1
@@ -1522,6 +1523,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 					lastcx = cx
 					lastcy = cy
 				end
+				modsOnMove(cells[cy][cx].ctype, cx, cy, cells[cy][cx].rot)
 			until cells[cy][cx].ctype == 0
 			cells[cy][cx].testvar = "moveend"
 		else
@@ -3690,6 +3692,7 @@ function love.mousepressed(x,y,b, istouch, presses)
 			love.audio.play(beep)
 			RefreshChunks()
 			typing = false
+			modsOnReset()
 		elseif x > 370 and x < 430 then
 			undocells = nil
 			width = newwidth+2
@@ -4256,6 +4259,7 @@ function love.keypressed(key, scancode, isrepeat)
 				isinitial = true
 				subtick = subtick and 0
 				RefreshChunks()
+				modsOnReset()
 			end
 		elseif key == "tab" then
 			selecting = not selecting
