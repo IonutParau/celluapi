@@ -4,6 +4,30 @@ moddedBombs = {}
 moddedTrash = {}
 cellsForIDManagement = {}
 cellLabels = {}
+cellWeights = {}
+
+function calculateCellPosition(x, y)
+  return {
+    x = math.floor((x - zoom/2 + offx)/zoom),
+    y = math.floor((y - zoom/2 + offx)/zoom)
+  }
+end
+
+function setCell(x, y, id, rot, lastvars)
+  local original = CopyCell(x, y)
+  rot = rot or original.rot
+  lastvars = lastvars or original.lastvars
+
+  cells[y][x].ctype = id
+  cells[y][x].rot = rot
+  cells[y][x].lastvars = lastvars
+  for i=1,#mods,1 do
+    local mod = require(mods[i])
+    if mod.onModSetCell ~= nil then
+      mod.onModSetCell(id, x, y, rot, lastvars, original)
+    end
+  end
+end
 
 function calculateScreenPosition(x, y)
   return {
@@ -12,15 +36,20 @@ function calculateScreenPosition(x, y)
   }
 end
 
-function walkDivergedPath(from_x, from_y, to_x, to_y)
+function walkDivergedPath(from_x, from_y, to_x, to_y, depth)
   local dx, dy = from_x - to_x, from_y - to_y
 
   local dir = 0
+  depth = depth or 0
 
   if dx == -1 then dir = 0 elseif dx == 1 then dir = 2 end
   if dy == -1 then dir = 1 elseif dy == 1 then dir = 3 end 
 
   local checkedrot = cells[to_y][to_x].rot
+
+  if depth > 999999 then
+    cells[to_y][to_x].ctype = 11
+  end
 
   if cells[to_y][to_x].ctype == 15 then
     if (checkedrot-1)%4 == dir then
@@ -39,7 +68,7 @@ function walkDivergedPath(from_x, from_y, to_x, to_y)
     if dir == 0 then dx = 1 elseif dir == 2 then dx = -1 end
     if dir == 1 then dy = 1 elseif dir == 3 then dy = -1 end
 
-    return walkDivergedPath(to_x, to_y, to_x + dx, to_y + dy)
+    return walkDivergedPath(to_x, to_y, to_x + dx, to_y + dy, depth + 1)
   elseif cells[to_y][to_x].ctype == 30 then
     if (checkedrot+1)%2 == dir%2 then
       dir = (dir+1)%4
@@ -52,10 +81,10 @@ function walkDivergedPath(from_x, from_y, to_x, to_y)
     if dir == 0 then dx = 1 elseif dir == 2 then dx = -1 end
     if dir == 1 then dy = 1 elseif dir == 3 then dy = -1 end
 
-    return walkDivergedPath(to_x, to_y, to_x + dx, to_y + dy)
+    return walkDivergedPath(to_x, to_y, to_x + dx, to_y + dy, depth + 1)
   elseif cells[to_y][to_x].ctype == 37 then
     if checkedrot%2 == dir%2 then
-      return walkDivergedPath(to_x, to_y, to_x - dx, to_y - dy)
+      return walkDivergedPath(to_x, to_y, to_x - dx, to_y - dy, depth + 1)
     else
       return {
         x = to_x,
@@ -63,7 +92,7 @@ function walkDivergedPath(from_x, from_y, to_x, to_y)
       }
     end
   elseif cells[to_y][to_x].ctype == 38 then
-    return walkDivergedPath(to_x, to_y, to_x - dx, to_y - dy)
+    return walkDivergedPath(to_x, to_y, to_x - dx, to_y - dy, depth + 1)
   else
     return {
       x = to_x,
@@ -105,7 +134,7 @@ function getCellLabel(x, y)
   return getCellLabelById(id)
 end
 
-function addCell(label, texture, push, ctype, invisible, index)
+function addCell(label, texture, push, ctype, invisible, index, weight)
   if label == "vanilla" or label == "unknown" then
     error("Invalid label for custom cell")
   end
@@ -122,6 +151,9 @@ function addCell(label, texture, push, ctype, invisible, index)
   pushabilitySheet[cellID] = push
   cellLabels[cellID] = label
   cellsForIDManagement[#cellsForIDManagement+1] = cellID
+  if weight ~= nil then
+    cellWeights[cellID] = weight
+  end
   ctype = ctype or "normal"
   if ctype == "mover" then
     moddedMovers[cellID] = true

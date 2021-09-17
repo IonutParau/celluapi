@@ -1076,8 +1076,12 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				lastupd = checkedupd
 				lastprot = checkedprot
 				addedrot = 0
-				if (checkedtype == 20 and not pushingdiverger) or checkedtype == 21 then
-					totalforce = totalforce - 1
+				if (checkedtype == 20 and not pushingdiverger) or checkedtype == 21 or cellWeights[checkedtype] ~= nil then
+					if checkedtype > initialCellCount then
+						totalforce = totalforce - cellWeights[checkedtype]
+					else
+						totalforce = totalforce - 1
+					end
 				elseif checkedtype == 49 and not pushingdiverger then
 					totalforce = 0
 				elseif checkedtype == 15 or (checkedtype == 47 or checkedtype == 48) and checkedrot == (direction+2)%4 then 
@@ -1385,8 +1389,12 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 					direction = (direction-1)%4
 				end
 				addedrot = addedrot + (direction-olddir)
-			elseif checkedtype == 21 or (checkedtype == 28 and not ignoreforce) then
-				totalforce = totalforce - 1
+			elseif checkedtype == 21 or (checkedtype == 28 and not ignoreforce) or (cellWeights[checkedtype] ~= nil) then
+				if checkedtype > initialCellCount then
+					totalforce = totalforce - cellWeights[checkedtype]
+				else
+					totalforce = totalforce - 1
+				end
 				cells[lastcy][lastcx].projectedtype = checkedtype
 				cells[lastcy][lastcx].projectedrot = (checkedrot-addedrot)%4
 				addedrot = 0
@@ -1430,7 +1438,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				elseif direction == 1 then
 					cy = cy - 1
 				end
-				if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or moddedBombs[checkedtype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
+				if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or moddedBombs[ccells[cy][cx].ctype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
 					if reps ~= 1 then
 						if isModdedTrash(cells[cy][cx].ctype) then
 							modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[lastcy][lastcx], lastcy, lastcx)
@@ -1955,9 +1963,39 @@ function DoGenerator(x,y,dir,gendir,istwist,dontupdate)
 				elseif (gentype == 15 or gentype == 56) then genrot = (genrot - 1)%4
 				else genrot = (-genrot + 2)%4 end
 			end
-			PushCell(x,y,gendir,false,1,gentype,genrot,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],genrot},cells[cy][cx].protected,false)
+			local p = PushCell(x,y,gendir,false,1,gentype,genrot,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],genrot},cells[cy][cx].protected,false)
+			if p then
+				local ox, oy = cx, cy
+				if direction == 0 then
+					cx = x - 1	
+				elseif direction == 2 then
+					cx = x + 1
+				elseif direction == 3 then
+					cy = y + 1
+				elseif direction == 1 then
+					cy = y - 1
+				end
+				local pos = walkDivergedPath(ox, oy, cx, cy)
+				cx, cy = pos.x, pos.y
+				modsOnCellGenerated(cells[y][x].ctype, x, y, cells[cy][cx].ctype, cx, cy)
+			end
 		else
-			PushCell(x,y,gendir,false,1,cells[cy][cx].ctype,cells[cy][cx].rot+addedrot,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(cells[cy][cx].rot+addedrot)%4},cells[cy][cx].protected,false)
+			local p = PushCell(x,y,gendir,false,1,cells[cy][cx].ctype,cells[cy][cx].rot+addedrot,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(cells[cy][cx].rot+addedrot)%4},cells[cy][cx].protected,false)
+			if p then
+				local ox, oy = cx, cy
+				if direction == 0 then
+					cx = x - 1	
+				elseif direction == 2 then
+					cx = x + 1
+				elseif direction == 3 then
+					cy = y + 1
+				elseif direction == 1 then
+					cy = y - 1
+				end
+				local pos = walkDivergedPath(ox, oy, cx, cy)
+				cx, cy = pos.x, pos.y
+				modsOnCellGenerated(cells[y][x].ctype, x, y, cells[cy][cx].ctype, cx, cy)
+			end
 		end
 	end
 end
@@ -2132,7 +2170,22 @@ function DoReplicator(x,y,dir,update)
 	end 
 	cells[cy][cx].testvar = "gen'd"
 	if cells[cy][cx].ctype ~= 0 and cells[cy][cx].ctype ~= 40 then
-		PushCell(x,y,dir,false,1,cells[cy][cx].ctype,cells[cy][cx].rot+addedrot,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(cells[cy][cx].rot+addedrot)%4},cells[cy][cx].protected,false)
+		local p = PushCell(x,y,dir,false,1,cells[cy][cx].ctype,cells[cy][cx].rot+addedrot,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(cells[cy][cx].rot+addedrot)%4},cells[cy][cx].protected,false)
+		if p then
+			local ox, oy = cx, cy
+			if direction == 0 then
+				cx = cx + 1	
+			elseif direction == 2 then
+				cx = cx - 1
+			elseif direction == 3 then
+				cy = cy - 1
+			elseif direction == 1 then
+				cy = cy + 1
+			end
+			local pos = walkDivergedPath(ox, oy, cx, cy)
+			cx, cy = pos.x, pos.y
+			modsOnCellGenerated(cells[y][x].ctype, x, y, cells[cy][cx].ctype, cx, cy)
+		end
 	end
 end
 
@@ -3443,7 +3496,7 @@ function love.update(dt)
 						initial[y][x].rot = 0
 					end
 					SetChunk(x,y,currentstate)
-					modsOnPlace(0, x, y, 0, original, oriignalInitial)
+					modsOnPlace(0, x, y, 0, original, originalInitial)
 				end
 			end
 		end

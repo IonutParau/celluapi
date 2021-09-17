@@ -3,6 +3,7 @@ audio = require "api/audio"
 save = require "api/save"
 
 config = {}
+modcache = {}
 
 function loadConfig()
 	local lines = {}
@@ -41,8 +42,7 @@ end
 
 function DoModded(id, x, y, rot)
 	cells[y][x].updated = true
-  for i=1,#mods,1 do
-    local mod = require(mods[i])
+  for _, mod in pairs(modcache) do
     if mod.update ~= nil then
       mod.update(id, x, y, rot)
     end
@@ -126,6 +126,7 @@ function initMods()
     if mod.init ~= nil then
 			mod.init()
 		end
+		modcache[#modcache+1] = mod
 		if i == #mods then
 			love.window.setTitle(love.window.getTitle() .. mods[i])
 		else
@@ -148,8 +149,7 @@ function CopyTable(table)
 end
 
 function modsCustomDraw()
-  for i=1,#mods,1 do
-    local mod = require(mods[i])
+  for _, mod in pairs(modcache) do
     if mod.customdraw ~= nil then
 			mod.customdraw()
 		end
@@ -157,8 +157,7 @@ function modsCustomDraw()
 end
 
 function modsTick()
-  for i=1,#mods,1 do
-    local mod = require(mods[i])
+  for _, mod in pairs(modcache) do
     if mod.tick ~= nil then
 			mod.tick()
 		end
@@ -166,8 +165,7 @@ function modsTick()
 end
 
 function modsOnKeyPressed(key, code, continous)
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onKeyPressed ~= nil then
 			mod.onKeyPressed(key, code, continous)
 		end
@@ -175,8 +173,7 @@ function modsOnKeyPressed(key, code, continous)
 end
 
 function modsOnModEnemyDed(id, x, y, killer, kx, ky)
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onEnemyDies ~= nil then
 			mod.onEnemyDies(id, x, y, killer, kx, ky)
 		end
@@ -184,8 +181,7 @@ function modsOnModEnemyDed(id, x, y, killer, kx, ky)
 end
 
 function modsOnTrashEat(id, x, y, food, fx, fy)
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onTrashEats ~= nil then
 			mod.onTrashEats(id, x, y, food, fx, fy)
 		end
@@ -193,8 +189,7 @@ function modsOnTrashEat(id, x, y, food, fx, fy)
 end
 
 function modsOnPlace(id, x, y, rot, original, originalInitial)
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onPlace ~= nil then
 			mod.onPlace(id, x, y, rot, original, originalInitial)
 		end
@@ -202,8 +197,7 @@ function modsOnPlace(id, x, y, rot, original, originalInitial)
 end
 
 function modsOnUnpause()
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onUnpause ~= nil then
 			mod.onUnpause()
 		end
@@ -211,8 +205,7 @@ function modsOnUnpause()
 end
 
 function modsOnMousePressed(x, y, button, istouch, presses)
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onMousePressed ~= nil then
 			mod.onMousePressed(x, y, button, istouch, presses)
 		end
@@ -220,8 +213,7 @@ function modsOnMousePressed(x, y, button, istouch, presses)
 end
 
 function modsOnMouseReleased(x, y, button, istouch, presses)
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onMouseReleased ~= nil then
 			mod.onMouseReleased(x, y, button, istouch, presses)
 		end
@@ -229,8 +221,7 @@ function modsOnMouseReleased(x, y, button, istouch, presses)
 end
 
 function modsOnCellDraw(id, x, y, dir)
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onCellDraw ~= nil then
 			mod.onCellDraw(id, x, y, dir)
 		end
@@ -238,8 +229,7 @@ function modsOnCellDraw(id, x, y, dir)
 end
 
 function modsOnReset()
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onReset ~= nil then
 			mod.onReset()
 		end
@@ -247,8 +237,7 @@ function modsOnReset()
 end
 
 function modsOnClear()
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onClear ~= nil then
 			mod.onClear()
 		end
@@ -256,8 +245,7 @@ function modsOnClear()
 end
 
 function modsOnMove(id, x, y, dir)
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onMove ~= nil then
 			mod.onMove(id, x, y, dir)
 		end
@@ -265,8 +253,7 @@ function modsOnMove(id, x, y, dir)
 end
 
 function modsOnSetInitial()
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onSetInitial ~= nil then
 			mod.onSetInitial()
 		end
@@ -274,10 +261,17 @@ function modsOnSetInitial()
 end
 
 function modsOnMouseScroll(x, y)
-	for i=1,#mods,1 do
-		local mod = require(mods[i])
+	for _, mod in pairs(modcache) do
 		if mod.onMouseScroll ~= nil then
 			mod.onMouseScroll(x, y)
+		end
+	end
+end
+
+function modsOnCellGenerated(generator, gx, gy, generated, cx, cy)
+	for _, mod in pairs(modcache) do
+		if mod.onCellGenerated ~= nil then
+			mod.onCellGenerated(generator, gx, gy, generated, cx, cy)
 		end
 	end
 end
