@@ -21,8 +21,7 @@ function setCell(x, y, id, rot, lastvars)
   cells[y][x].ctype = id
   cells[y][x].rot = rot
   cells[y][x].lastvars = lastvars
-  for i=1,#mods,1 do
-    local mod = require(mods[i])
+  for _, mod in pairs(modcache) do
     if mod.onModSetCell ~= nil then
       mod.onModSetCell(id, x, y, rot, lastvars, original)
     end
