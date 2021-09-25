@@ -6,24 +6,6 @@ cellsForIDManagement = {}
 cellLabels = {}
 cellWeights = {}
 
-function broadcastSignals(sender, signal)
-  for name, mod in modcache do
-    if name ~= sender then
-      if mod.onModSignalRecieved then
-        mod.onModSignalRecieved(sender, signal)
-      end
-    end
-  end
-end
-
-function sendSignal(sender, reciever, signal)
-  local rmod = modcache[reciever]
-
-  if rmod.onModSignalRecieved then
-    rmod.onModSignalRecieved(sender, signal)
-  end
-end
-
 function calculateCellPosition(x, y)
   return {
     x = math.floor((x - zoom/2 + offx)/zoom),

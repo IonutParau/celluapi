@@ -5,6 +5,24 @@ save = require "api/save"
 config = {}
 modcache = {}
 
+function broadcastSignal(sender, signal)
+  for name, mod in pairs(modcache) do
+    if name ~= sender then
+      if mod.onModSignalRecieved then
+        mod.onModSignalRecieved(sender, signal)
+      end
+    end
+  end
+end
+
+function sendSignal(sender, reciever, signal)
+  local rmod = modcache[reciever]
+
+  if rmod.onModSignalRecieved then
+    rmod.onModSignalRecieved(sender, signal)
+  end
+end
+
 function loadConfig()
 	local lines = {}
 	for line in love.filesystem.lines("api.config") do
