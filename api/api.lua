@@ -126,7 +126,7 @@ function initMods()
     if mod.init ~= nil then
 			mod.init()
 		end
-		modcache[#modcache+1] = mod
+		modcache[mods[i]] = mod
 		if i == #mods then
 			love.window.setTitle(love.window.getTitle() .. mods[i])
 		else
