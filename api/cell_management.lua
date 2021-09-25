@@ -5,6 +5,11 @@ moddedTrash = {}
 cellsForIDManagement = {}
 cellLabels = {}
 cellWeights = {}
+moddedDivergers = {}
+
+function bindDivergerFunction(id, divergerFunction)
+  moddedDivergers[id] = divergerFunction
+end
 
 function calculateCellPosition(x, y)
   return {
@@ -50,7 +55,22 @@ function walkDivergedPath(from_x, from_y, to_x, to_y, depth)
     cells[to_y][to_x].ctype = 11
   end
 
-  if cells[to_y][to_x].ctype == 15 then
+  if moddedDivergers[cells[to_y][to_x].ctype] ~= nil then
+    local dir = moddedDivergers[cells[to_y][to_x].ctype](to_x, to_y, dir)
+    if dir == null then
+      return {
+        x = to_x,
+        y = to_y
+      }
+    end
+
+    dx, dy = 0, 0
+
+    if dir == 0 then dx = 1 elseif dir == 2 then dx = -1 end
+    if dir == 1 then dy = 1 elseif dir == 3 then dy = -1 end
+
+    return walkDivergedPath(to_x, to_y, to_x + dx, to_y + dy, depth + 1)
+  elseif cells[to_y][to_x].ctype == 15 then
     if (checkedrot-1)%4 == dir then
       dir = (dir+1)%4
     elseif (checkedrot+2)%4 == dir then
@@ -160,6 +180,8 @@ function addCell(label, texture, push, ctype, invisible, index, weight)
     moddedBombs[cellID] = true
   elseif ctype == "trash" then
     moddedTrash[cellID] = true
+  elseif ctype == "diverger" then
+    moddedDivergers[cellID] = function(x, y, rot) return rot end
   end
   for k,v in pairs(tex) do
     texsize[k] = {}
