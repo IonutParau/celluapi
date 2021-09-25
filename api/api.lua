@@ -263,11 +263,11 @@ function modsOnClear()
 end
 
 function modsOnMove(id, x, y, dir)
-	for _, mod in pairs(modcache) do
-		if mod.onMove ~= nil then
-			mod.onMove(id, x, y, dir)
-		end
-	end
+	-- for _, mod in pairs(modcache) do
+	-- 	if mod.onMove ~= nil then
+	-- 		mod.onMove(id, x, y, dir)
+	-- 	end
+	-- end
 end
 
 function modsOnSetInitial()
