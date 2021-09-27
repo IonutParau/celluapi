@@ -33,11 +33,15 @@ function setCell(x, y, id, rot, lastvars)
   end
 end
 
-function calculateScreenPosition(x, y)
-  return {
-    x = math.floor(x*zoom-offx+zoom/2),
-    y = math.floor(y*zoom-offy+zoom/2)
-  }
+function calculateScreenPosition(x, y, lastvars)
+  if lastvars == nil then
+    return {
+      x = math.floor(x*zoom-offx+zoom/2),
+      y = math.floor(y*zoom-offy+zoom/2)
+    }
+  else
+    return calculateScreenPosition(lerp(lastvars[1],x,itime/delay), lerp(lastvars[2],y,itime/delay))
+  end
 end
 
 function walkDivergedPath(from_x, from_y, to_x, to_y, depth)

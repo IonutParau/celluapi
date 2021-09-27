@@ -1251,9 +1251,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				else
 					local oldcell = CopyCell(cx,cy)
 					if cells[cy][cx].ctype ~= 46 or storedcell.ctype == 0 or storedcell.protected then
-						cells[cy][cx].ctype = storedcell.ctype
-						cells[cy][cx].updated = storedcell.updated
-						cells[cy][cx].protected = storedcell.protected
+						cells[cy][cx] = storedcell
 					end
 					cells[cy][cx].rot = (storedcell.rot + addedrot)%4
 					cells[cy][cx].lastvars = {storedcell.lastvars[1],storedcell.lastvars[2],storedcell.lastvars[3]}
