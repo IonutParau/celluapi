@@ -141,9 +141,6 @@ function initMods()
 	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. " (") end
   for i=1,#mods,1 do
     local mod = require(mods[i])
-    if mod.init ~= nil then
-			mod.init()
-		end
 		modcache[mods[i]] = mod
 		if i == #mods then
 			love.window.setTitle(love.window.getTitle() .. mods[i])
@@ -152,6 +149,11 @@ function initMods()
 		end
   end
 	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. ")") end
+	for _, mod in pairs(modcache) do
+		if mod.init ~= nil then
+			mod.init()
+		end
+	end
 end
 
 function CopyTable(table)
