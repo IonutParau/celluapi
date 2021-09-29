@@ -6,8 +6,14 @@ cellsForIDManagement = {}
 cellLabels = {}
 cellWeights = {}
 moddedDivergers = {}
+local cellTypes = {}
+
+function getCellType(id)
+  return cellTypes[id] or "unknown"
+end
 
 function bindDivergerFunction(id, divergerFunction)
+  if getCellType(id) == "diverger" then return end
   moddedDivergers[id] = divergerFunction
 end
 
@@ -187,6 +193,7 @@ function addCell(label, texture, push, ctype, invisible, index, weight)
   elseif ctype == "diverger" then
     moddedDivergers[cellID] = function(x, y, rot) return rot end
   end
+  cellTypes[cellID] = ctype
   texsize[cellID] = {}
   texsize[cellID].w = tex[cellID]:getWidth()
   texsize[cellID].h = tex[cellID]:getHeight()
