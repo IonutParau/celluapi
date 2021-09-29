@@ -61,7 +61,7 @@ function walkDivergedPath(from_x, from_y, to_x, to_y, depth)
 
   if moddedDivergers[cells[to_y][to_x].ctype] ~= nil then
     local dir = moddedDivergers[cells[to_y][to_x].ctype](to_x, to_y, dir)
-    if dir == null then
+    if dir == nil then
       return {
         x = to_x,
         y = to_y
