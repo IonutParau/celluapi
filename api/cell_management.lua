@@ -15,7 +15,7 @@ function getCellType(id)
 end
 
 function bindDivergerFunction(id, divergerFunction)
-  if getCellType(id) == "diverger" then return end
+  if getCellType(id) ~= "diverger" then return end
   moddedDivergers[id] = divergerFunction
 end
 
