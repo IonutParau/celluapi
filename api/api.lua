@@ -4,6 +4,8 @@ save = require "api/save"
 MB = require "libs.ModBinder"
 syn = require "libs.Synapse"
 eml = require("libs.E-ML")
+conf = require("api.config")
+sec = require("api.security")
 
 config = {}
 modcache = {}
@@ -26,16 +28,7 @@ function sendSignal(sender, reciever, signal)
   end
 end
 
-function loadConfig()
-	local lines = {}
-	for line in love.filesystem.lines("api.config") do
-		table.insert(lines, line)
-	end
-	for i=1,#lines,1 do
-		local code = split(lines[i], '=')
-		config[code[1]] = code[2]
-	end
-end
+config = loadConfig()
 
 mods = {}
 initialCellCount = 0

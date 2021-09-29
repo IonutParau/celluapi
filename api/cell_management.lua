@@ -187,13 +187,11 @@ function addCell(label, texture, push, ctype, invisible, index, weight)
   elseif ctype == "diverger" then
     moddedDivergers[cellID] = function(x, y, rot) return rot end
   end
-  for k,v in pairs(tex) do
-    texsize[k] = {}
-    texsize[k].w = tex[k]:getWidth()
-    texsize[k].h = tex[k]:getHeight()
-    texsize[k].w2 = tex[k]:getWidth()/2	--for optimization
-    texsize[k].h2 = tex[k]:getHeight()/2
-  end
+  texsize[cellID] = {}
+  texsize[cellID].w = tex[cellID]:getWidth()
+  texsize[cellID].h = tex[cellID]:getHeight()
+  texsize[cellID].w2 = tex[cellID]:getWidth()/2
+  texsize[cellID].h2 = tex[cellID]:getHeight()/2
   moddedIDs[#moddedIDs+1] = cellID
   return cellID
 end
