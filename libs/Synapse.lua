@@ -37,9 +37,12 @@ function Synapse.isListener(id)
   return (listeners[id] ~= nil)
 end
 
-function Synapse.connect(connector, connected)
+function Synapse.connect(connector, connected, connectionData)
   if Synapse.isListener(connected) then
-    listeners[connected](connector, "connection-start")
+    local accepted = listeners[connected](connector, "connection-start", connectionData)
+    if accepted == false then
+      return nil, nil
+    end
   end 
   local connectionID = #connections + 1
   local connection = {
