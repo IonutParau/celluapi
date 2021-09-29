@@ -124,7 +124,7 @@ function SetChunk(x,y,ctype)
 		chunks[math.floor(y/25)][math.floor(x/25)].hassupergenerator = true
 	elseif ctype == 57 then
 		chunks[math.floor(y/25)][math.floor(x/25)].hasdriller = true
-	else
+	elseif ctype > initialCellCount then
 		if not chunks[math.floor(y/25)][math.floor(x/25)].hasmodded then chunks[math.floor(y/25)][math.floor(x/25)].hasmodded = {} end
 		chunks[math.floor(y/25)][math.floor(x/25)].hasmodded[ctype] = true
 	end

@@ -1,6 +1,9 @@
 cm = require "api/cell_management"
 audio = require "api/audio"
 save = require "api/save"
+MB = require "libs.ModBinder"
+syn = require "libs.Synapse"
+eml = require("libs.E-ML")
 
 config = {}
 modcache = {}
@@ -141,7 +144,9 @@ function initMods()
 	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. " (") end
   for i=1,#mods,1 do
     local mod = require(mods[i])
-		modcache[mods[i]] = mod
+		if type(mod) == "table" then
+			modcache[mods[i]] = mod
+		end
 		if i == #mods then
 			love.window.setTitle(love.window.getTitle() .. mods[i])
 		else
@@ -149,7 +154,8 @@ function initMods()
 		end
   end
 	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. ")") end
-	for _, mod in pairs(modcache) do
+	for i, modname in pairs(mods) do
+		local mod = modcache[modname]
 		if mod.init ~= nil then
 			mod.init()
 		end
@@ -265,11 +271,11 @@ function modsOnClear()
 end
 
 function modsOnMove(id, x, y, dir)
-	-- for _, mod in pairs(modcache) do
-	-- 	if mod.onMove ~= nil then
-	-- 		mod.onMove(id, x, y, dir)
-	-- 	end
-	-- end
+	for _, mod in pairs(modcache) do
+		if mod.onMove ~= nil then
+			mod.onMove(id, x, y, dir)
+		end
+	end
 end
 
 function modsOnSetInitial()
