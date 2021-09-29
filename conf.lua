@@ -10,6 +10,5 @@ function love.conf(t)
 	t.window.title = "CelLuAPI Machine"
 	t.modules.physics = false
 	t.modules.video = false
-	t.modules.system = false
 	t.modules.thread = false
 end

@@ -1055,11 +1055,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		elseif moddedDivergers[checkedtype] ~= nil and moddedDivergers[cells[cy][cx].ctype](cx, cy, direction) ~= nil then
 			local olddir = direction
 			direction = moddedDivergers[checkedtype](cx, cy, direction)
-			if direction == nil then
-				addedrot = addedrot
-			else
-				addedrot = addedrot - (direction-olddir)
-			end
+			addedrot = addedrot - (direction-olddir)
 		elseif checkedtype >= 31 and checkedtype <= 36 then
 			if (checkedrot-1)%2 == direction%2 then
 				break
@@ -1215,9 +1211,6 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 			elseif moddedDivergers[cells[cy][cx].ctype] ~= nil and moddedDivergers[cells[cy][cx].ctype](cx, cy, direction) ~= nil then
 				local olddir = direction
 				direction = moddedDivergers[cells[cy][cx].ctype](cx, cy, direction)
-				if direction == nil then
-					direction = olddir
-				end
 				addedrot = addedrot + (direction-olddir)
 			elseif cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
 				if (cells[cy][cx].rot-1)%4 == direction then
@@ -1320,9 +1313,6 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 			elseif moddedDivergers[cells[cy][cx].ctype] ~= nil and moddedDivergers[cells[cy][cx].ctype](cx, cy, direction) ~= nil then
 				local olddir = direction
 				direction = moddedDivergers[cells[cy][cx].ctype](cx, cy, direction)
-				if direction == nil then
-					direction = olddir
-				end
 			elseif not ((cells[cy][cx].ctype == 37 and cells[cy][cx].rot%2 == direction%2) or cells[cy][cx].ctype == 38) then
 				blocked = true
 				break
@@ -1411,9 +1401,6 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 			elseif moddedDivergers[checkedtype] ~= nil and moddedDivergers[cells[cy][cx].ctype](cx, cy, direction) ~= nil then
 				local olddir = direction
 				direction = moddedDivergers[cells[cy][cx].ctype](cx, cy, direction)
-				if direction == nil then
-					direction = olddir
-				end
 			elseif checkedtype == 21 or (checkedtype == 28 and not ignoreforce) or (cellWeights[checkedtype] ~= nil) then
 				if checkedtype > initialCellCount then
 					totalforce = totalforce - cellWeights[checkedtype]
@@ -1495,9 +1482,6 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				elseif moddedDivergers[cells[cy][cx].ctype] ~= nil and moddedDivergers[cells[cy][cx].ctype](cx, cy, direction) ~= nil then
 					local olddir = direction
 					direction = moddedDivergers[cells[cy][cx].ctype](cx, cy, direction)
-					if direction == nil then
-						direction = olddir
-					end
 					addedrot = addedrot + (direction-olddir)
 				elseif cells[cy][cx].ctype == -1 or cells[cy][cx].ctype == 40 or cells[cy][cx].ctype == 4 and direction%2 ~= cells[cy][cx].rot%2
 				or cells[cy][cx].ctype == 5 and direction ~= cells[cy][cx].rot
@@ -1818,9 +1802,6 @@ function DoSuperGenerator(x,y,dir)
 		elseif moddedDivergers[cells[cy][cx].ctype] ~= nil and moddedDivergers[cells[cy][cx].ctype](cx, cy, direction) ~= nil then
 			local olddir = direction
 			direction = moddedDivergers[cells[cy][cx].ctype](cx, cy, direction)
-			if direction == nil then
-				direction = olddir
-			end
 			addedrot = addedrot - (direction-olddir)
 		elseif (cells[cy][cx].ctype == 47 or cells[cy][cx].ctype == 48) and (cells[cy][cx].rot+2)%2 ~= direction%2 then
 			local olddir = direction
@@ -1963,11 +1944,7 @@ function DoGenerator(x,y,dir,gendir,istwist,dontupdate)
 		elseif moddedDivergers[cells[cy][cx].ctype] ~= nil and moddedDivergers[cells[cy][cx].ctype](cx, cy, direction) ~= nil then
 			local olddir = direction
 			direction = moddedDivergers[cells[cy][cx].ctype](cx, cy, direction)
-			if direction == nil then
-				direction = olddir
-			else
-				addedrot = addedrot - (direction-olddir)
-			end
+			addedrot = addedrot - (direction-olddir)
 		elseif (cells[cy][cx].ctype == 47 or cells[cy][cx].ctype == 48) and (cells[cy][cx].rot+2)%2 ~= direction%2 then
 			local olddir = direction
 			if (cells[cy][cx].rot+1)%4 == direction then
@@ -2218,9 +2195,6 @@ function DoReplicator(x,y,dir,update)
 		elseif moddedDivergers[cells[cy][cx].ctype] and moddedDivergers[cells[cy][cx].ctype](cx, cy, direction) ~= nil then
 			local olddir = direction
 			direction = moddedDivergers[cells[cy][cx].ctype](cx, cy, direction)
-			if direction == nil then
-				direction = olddir
-			end
 			addedrot = addedrot - (direction-olddir)
 		elseif not ((cells[cy][cx].ctype == 37 and cells[cy][cx].rot%2 == direction%2) or cells[cy][cx].ctype == 38 or (cells[cy][cx].ctype == 48 and (cells[cy][cx].rot+2)%4 == direction)) then
 			break
