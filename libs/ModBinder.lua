@@ -1,5 +1,7 @@
 ModBinder = {}
 
+ModBinder.version = "First-Build"
+
 function ModBinder.bindMod(modName)
   -- This function is for binding a mod
   local mod = {}

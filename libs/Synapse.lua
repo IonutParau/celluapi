@@ -1,5 +1,7 @@
 Synapse = {}
 
+Synapse.version = "0.2 First-Integration"
+
 local listeners = {}
 
 local connections = {}
