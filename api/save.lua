@@ -22,7 +22,7 @@ function decimalToHex(num)
   local hexstr = "0123456789ABCDEF"
   local result = ""
   while num > 0 do
-      local n = math.mod(num, 16)
+      local n = num % 16
       result = string.sub(hexstr, n + 1, n + 1) .. result
       num = math.floor(num / 16)
   end

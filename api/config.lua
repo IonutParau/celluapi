@@ -1,4 +1,4 @@
-require('api.save')
+require('api/save')
 
 function loadConfig()
 	local lines = {}
