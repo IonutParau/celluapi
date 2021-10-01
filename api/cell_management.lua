@@ -87,9 +87,6 @@ function canPushCell(cx, cy, px, py, pushing)
   if (not cx) or (not cy) then
     return false
   end
-  if cx < 1 or cx > width-1 or cy < 1 or cy > height-1 then
-    return false
-  end
   local cdir = cells[cy][cx].rot
   local pdir = cells[py][px].rot
   local ctype = cells[cy][cx].ctype
