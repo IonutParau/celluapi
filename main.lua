@@ -2759,7 +2759,7 @@ function DoSuperRepulser(x,y,dir)
 		and (cells[cy][cx].ctype ~= 47 and cells[cy][cx].ctype ~= 48 or cells[cy][cx].rot ~= direction) and (cells[cy][cx].ctype < 31 or cells[cy][cx].ctype > 36 or cells[cy][cx].rot%2 == direction%2) then
 			cells[cy][cx].scrosses = (cells[cy][cx].supdatekey == supdatekey and cells[cy][cx].scrosses or 0) + 1
 			cells[cy][cx].supdatekey = supdatekey
-			if cells[cy][cx].scrosses >= 3 then
+			if cells[cy][cx].scrosses >= 999999999 then
 				cells[cy][cx].testvar = "loop"
 				break
 			end
