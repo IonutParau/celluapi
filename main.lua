@@ -3539,6 +3539,7 @@ function love.update(dt)
 	end
 	itime = math.min(itime + dt,delay)
 	enemyparticles:update(dt)
+	modsCustomUpdate(dt)
 end
 
 function love.draw()

@@ -362,6 +362,15 @@ function modsOnCellGenerated(generator, gx, gy, generated, cx, cy)
 	end
 end
 
+-- Blendi plz no
+function modsCustomUpdate(dt)
+	for _, mod in pairs(modcache) do
+		if type(mod.customupdate) == "function" then
+			mod.customupdate(dt)
+		end
+	end
+end
+
 function isModdedTrash(id)
 	return (moddedTrash[id] ~= nil)
 end
