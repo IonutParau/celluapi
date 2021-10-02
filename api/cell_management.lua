@@ -9,6 +9,28 @@ cellLabels = {}
 cellWeights = {}
 moddedDivergers = {}
 local cellTypes = {}
+local unmovableData = {}
+
+function nilifyData(cell)
+  for k, v in pairs(unmovableData) do
+    if type(v) == "boolean" then
+      cell[k] = nil
+    elseif type(v) == "table" then
+      cell[k] = CopyTable(v)
+    else
+      cell[k] = v
+    end
+  end
+end
+
+function addUnmovableData(data, optionalDefault)
+  unmovableData[data] = optionalDefault
+end
+
+function removeUnmovableData(data)
+  unmovableData[data] = nil
+end
+
 
 function getCellType(id)
   return cellTypes[id] or "unknown"

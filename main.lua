@@ -1247,6 +1247,8 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					break
 				else
 					local oldcell = CopyCell(cx,cy)
+					--Added because of Qwerty.R_Dev#9850
+					nilifyData(storedcell)
 					if cells[cy][cx].ctype ~= 46 or storedcell.ctype == 0 or storedcell.protected then
 						cells[cy][cx] = CopyTable(storedcell)
 					end
