@@ -10,6 +10,55 @@ sec = require("api.security")
 config = {}
 modcache = {}
 
+function checkVersion(mod, version)
+	if modcache[mod] == nil then return false end
+	if modcache[mod].version == nil then return false end
+	if modcache[mod].version == version then return true end
+
+	local comparison = split(split(version, ' ')[1], '.')
+
+	local numcomparison = {}
+
+	for k, v in pairs(comparison) do
+		table.insert(numcomparison, tostring(v))
+	end
+
+	local ver = split(split(modcache[mod].version, ' ')[1], '.')
+
+	local numver = {}
+
+	for k, v in pairs(ver) do
+		table.insert(numver, tostring(v))
+	end
+
+	for k, v in pairs(numver) do
+		if not numcomparison[k] then return false end
+
+		if v < numcomparison[k] then return false end
+	end
+
+	return true
+end
+
+function hasMod(mod)
+	for k, v in pairs(mods) do
+		if v == mod then
+			return true
+		end
+	end
+	return false
+end
+
+function checkDependencies(d)
+	if type(d) == "table" then
+		for k, v in pairs(d) do
+			if not hasMod(v) then
+				error("A mod required another mod as a dependency (" .. v .. " was the dependency) but that mod did not exist.")
+			end			
+		end
+	end
+end
+
 function broadcastSignal(sender, signal)
   for name, mod in pairs(modcache) do
     if name ~= sender then
@@ -164,7 +213,10 @@ function initMods()
   end
 	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. ")") end
 	for _, mod in pairs(modcache) do
-		if mod.init ~= nil then
+		if type(mod.dependencies) == "table" then
+			checkDependencies(mod.dependencies)
+		end
+		if type(mod.init) == "function" then
 			mod.init()
 		end
 	end
@@ -184,7 +236,7 @@ end
 
 function modsCustomDraw()
   for _, mod in pairs(modcache) do
-    if mod.customdraw ~= nil then
+    if type(mod.customdraw) == "function" then
 			mod.customdraw()
 		end
   end
@@ -192,7 +244,7 @@ end
 
 function modsTick()
   for _, mod in pairs(modcache) do
-    if mod.tick ~= nil then
+    if type(mod.tick) == "function" then
 			mod.tick()
 		end
   end
@@ -200,7 +252,7 @@ end
 
 function modsOnKeyPressed(key, code, continous)
 	for _, mod in pairs(modcache) do
-		if mod.onKeyPressed ~= nil then
+		if type(mod.onKeyPressed) == "function" then
 			mod.onKeyPressed(key, code, continous)
 		end
 	end
@@ -208,7 +260,7 @@ end
 
 function modsOnModEnemyDed(id, x, y, killer, kx, ky)
 	for _, mod in pairs(modcache) do
-		if mod.onEnemyDies ~= nil then
+		if type(mod.onEnemyDies) == "function" then
 			mod.onEnemyDies(id, x, y, killer, kx, ky)
 		end
 	end
@@ -216,7 +268,7 @@ end
 
 function modsOnTrashEat(id, x, y, food, fx, fy)
 	for _, mod in pairs(modcache) do
-		if mod.onTrashEats ~= nil then
+		if type(mod.onTrashEats) == "function" then
 			mod.onTrashEats(id, x, y, food, fx, fy)
 		end
 	end
@@ -224,7 +276,7 @@ end
 
 function modsOnPlace(id, x, y, rot, original, originalInitial)
 	for _, mod in pairs(modcache) do
-		if mod.onPlace ~= nil then
+		if type(mod.onPlace) == "function" then
 			mod.onPlace(id, x, y, rot, original, originalInitial)
 		end
 	end
@@ -232,7 +284,7 @@ end
 
 function modsOnUnpause()
 	for _, mod in pairs(modcache) do
-		if mod.onUnpause ~= nil then
+		if type(mod.onUnpause) == "function" then
 			mod.onUnpause()
 		end
 	end
@@ -240,7 +292,7 @@ end
 
 function modsOnMousePressed(x, y, button, istouch, presses)
 	for _, mod in pairs(modcache) do
-		if mod.onMousePressed ~= nil then
+		if type(mod.onMousePressed) == "function" then
 			mod.onMousePressed(x, y, button, istouch, presses)
 		end
 	end
@@ -248,7 +300,7 @@ end
 
 function modsOnMouseReleased(x, y, button, istouch, presses)
 	for _, mod in pairs(modcache) do
-		if mod.onMouseReleased ~= nil then
+		if type(mod.onMouseReleased) == "function" then
 			mod.onMouseReleased(x, y, button, istouch, presses)
 		end
 	end
@@ -256,7 +308,7 @@ end
 
 function modsOnCellDraw(id, x, y, dir)
 	for _, mod in pairs(modcache) do
-		if mod.onCellDraw ~= nil then
+		if type(mod.onCellDraw) == "function" then
 			mod.onCellDraw(id, x, y, dir)
 		end
 	end
@@ -264,7 +316,7 @@ end
 
 function modsOnReset()
 	for _, mod in pairs(modcache) do
-		if mod.onReset ~= nil then
+		if type(mod.onReset) == "function" then
 			mod.onReset()
 		end
 	end
@@ -272,7 +324,7 @@ end
 
 function modsOnClear()
 	for _, mod in pairs(modcache) do
-		if mod.onClear ~= nil then
+		if type(mod.onClear) == "function" then
 			mod.onClear()
 		end
 	end
@@ -280,7 +332,7 @@ end
 
 function modsOnMove(id, x, y, dir)
 	for _, mod in pairs(modcache) do
-		if mod.onMove ~= nil then
+		if type(mod.onMove) == "function" then
 			mod.onMove(id, x, y, dir)
 		end
 	end
@@ -288,7 +340,7 @@ end
 
 function modsOnSetInitial()
 	for _, mod in pairs(modcache) do
-		if mod.onSetInitial ~= nil then
+		if type(mod.onSetInitial) == "function" then
 			mod.onSetInitial()
 		end
 	end
@@ -296,7 +348,7 @@ end
 
 function modsOnMouseScroll(x, y)
 	for _, mod in pairs(modcache) do
-		if mod.onMouseScroll ~= nil then
+		if type(mod.onMouseScroll) == "function" then
 			mod.onMouseScroll(x, y)
 		end
 	end
@@ -304,7 +356,7 @@ end
 
 function modsOnCellGenerated(generator, gx, gy, generated, cx, cy)
 	for _, mod in pairs(modcache) do
-		if mod.onCellGenerated ~= nil then
+		if type(mod.onCellGenerated) == "function" then
 			mod.onCellGenerated(generator, gx, gy, generated, cx, cy)
 		end
 	end
