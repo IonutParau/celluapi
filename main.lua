@@ -1504,9 +1504,9 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 						if cells[frontcy][frontcx].ctype == 11 or isModdedTrash(cells[frontcy][frontcx].ctype) or cells[frontcy][frontcx].ctype == 50 or cells[frontcy][frontcx].ctype == 43 and (cells[frontcy][frontcx].rot+addedrot)%4 == (direction+2)%4 then
 							if cells[cy][cx].ctype ~= 0 then
 								love.audio.play(destroysound)
-								if isModdedTrash(cells[frontcy][frontcx].ctype) then
-									modsOnTrashEat(cells[frontcy][frontcx].ctype, frontcx, frontcy, cells[cy][cx], cx, cy)
-								end
+								-- if isModdedTrash(cells[frontcy][frontcx].ctype) then
+								-- 	modsOnTrashEat(cells[frontcy][frontcx].ctype, frontcx, frontcy, cells[cy][cx], cx, cy)
+								-- end
 								if cells[frontcy][frontcx].ctype == 50 then
 									if frontcx < width-1 and (not cells[frontcy][frontcx+1].protected and cells[frontcy][frontcx+1].ctype ~= -1 and cells[frontcy][frontcx+1].ctype ~= 11 and not isModdedTrash(cells[frontcy][frontcx+1].ctype) and cells[frontcy][frontcx+1].ctype ~= 40 and cells[frontcy][frontcx+1].ctype ~= 50) then cells[frontcy][frontcx+1].ctype = 0 end
 									if frontcx > 0 and (not cells[frontcy][frontcx-1].protected and cells[frontcy][frontcx-1].ctype ~= -1 and cells[frontcy][frontcx-1].ctype ~= 11 and not isModdedTrash(cells[frontcy][frontcx-1].ctype) and cells[frontcy][frontcx-1].ctype ~= 40 and cells[frontcy][frontcx-1].ctype ~= 50) then cells[frontcy][frontcx-1].ctype = 0 end
