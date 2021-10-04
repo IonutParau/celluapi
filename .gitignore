@@ -2,3 +2,4 @@ testmod.lua
 CelLuAPI.zip
 CelLuAPI.love
 .vscode
+plugins/*

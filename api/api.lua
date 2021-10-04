@@ -83,6 +83,7 @@ mods = {}
 initialCellCount = 0
 initialCells = {}
 loadConfig()
+
 --loadModLoader()
 if not external() then
 	if config['auto_detect_mods'] == 'true' then

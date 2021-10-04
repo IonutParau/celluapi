@@ -10,6 +10,36 @@ cellWeights = {}
 moddedDivergers = {}
 local cellTypes = {}
 local unmovableData = {}
+local flippered = {}
+
+function getRealID(id)
+  if type(id) == "string" then
+    return getCellIDByLabel(id)
+  end
+  return id
+end
+
+function hasFlipperTranslation(cellID)
+  cellID = getRealID(cellID)
+
+  return (flippered[cellID] ~= nil)
+end
+
+function makeFlipperTranslation(cellID)
+  cellID = getRealID(cellID)
+
+  return (flippered[cellID] or cellID)
+end
+
+function addFlipperTranslation(translator, translated, bothWays)
+  if not bothWays then bothWays = true end
+  
+  translator = getRealID(translator)
+  translated = getRealID(translated)
+  
+  flippered[translator] = translated
+  if bothWays then flippered[translated] = translator end
+end
 
 function nilifyData(cell)
   for k, v in pairs(unmovableData) do
