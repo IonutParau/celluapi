@@ -11,6 +11,20 @@ moddedDivergers = {}
 local cellTypes = {}
 local unmovableData = {}
 local flippered = {}
+local unfreezable = {}
+
+function isUnfreezable(id)
+  return (unfreezable[id] == true)
+end
+
+function ToggleFreezability(id)
+  id = getRealID(id)
+
+  if not unfreezable[id] then
+    unfreezable[id] = false
+  end
+  unfreezable[id] = not unfreezable[id]
+end
 
 function getRealID(id)
   if type(id) == "string" then
