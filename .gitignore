@@ -3,3 +3,4 @@ CelLuAPI.zip
 CelLuAPI.love
 .vscode
 plugins/*
+!plugins/toinit.txt
