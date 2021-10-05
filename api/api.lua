@@ -183,20 +183,22 @@ function UpdateModdedCells()
 	end
 end
 
-function initMods()
-	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. " (") end
-  for i=1,#mods,1 do
-    local mod = require(mods[i])
-		if type(mod) == "table" then
-			modcache[mods[i]] = mod
-		end
-		if i == #mods then
-			love.window.setTitle(love.window.getTitle() .. mods[i])
-		else
-			love.window.setTitle(love.window.getTitle() .. mods[i] .. ",")
-		end
-  end
-	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. ")") end
+function initMods(forTests)
+	if not forTests then
+		if #mods > 0 then love.window.setTitle(love.window.getTitle() .. " (") end
+  	for i=1,#mods,1 do
+    	local mod = require(mods[i])
+			if type(mod) == "table" then
+				modcache[mods[i]] = mod
+			end
+			if i == #mods then
+				love.window.setTitle(love.window.getTitle() .. mods[i])
+			else
+				love.window.setTitle(love.window.getTitle() .. mods[i] .. ",")
+			end
+  	end
+		if #mods > 0 then love.window.setTitle(love.window.getTitle() .. ")") end
+	end
 	for _, mod in pairs(modcache) do
 		if type(mod.dependencies) == "table" then
 			checkDependencies(mod.dependencies)

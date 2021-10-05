@@ -12,6 +12,11 @@ local cellTypes = {}
 local unmovableData = {}
 local flippered = {}
 local unfreezable = {}
+local fungals = {}
+
+function isFungal(id)
+  return (fungals[id] ~= nil)
+end
 
 function isUnfreezable(id)
   return (unfreezable[id] == true)
@@ -138,6 +143,8 @@ function addCell(label, texture, push, ctype, invisible, index, weight)
     moddedTrash[cellID] = true
   elseif ctype == "diverger" then
     moddedDivergers[cellID] = function(x, y, rot) return rot end
+  elseif ctype == "fungal" then
+    fungals[cellID] = true
   end
   cellTypes[cellID] = ctype
   texsize[cellID] = {}

@@ -4,3 +4,5 @@ CelLuAPI.love
 .vscode
 plugins/*
 !plugins/toinit.txt
+tests
+tests/*

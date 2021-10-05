@@ -1,6 +1,6 @@
 require("api.plugin") -- Called for plugin system
 
-utf8 = require "utf8"
+--utf8 = require "utf8"
 api = require "api/api"
 cells,delay,dtime,currentstate,currentrot,tex,zoom,offx,offy,placecells,interpolate,inmenu,tpu,updatekey,dodebug,itime,initial,isinitial,
 paused,placeables,newwidth,newheight,showinstructions,chunks,ticknum,selecting,volume,copied,selx,sely,selw,selh,pasting,undocells,page,border,wasinitial,typing,subtick,supdatekey =
@@ -1092,7 +1092,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					totalforce = 0
 				elseif checkedtype == 15 or (checkedtype == 47 or checkedtype == 48) and checkedrot == (direction+2)%4 then 
 					pushingdiverger = true
-				elseif checkedtype == 46 then 
+				elseif checkedtype == 46 or isFungal(checkedtype) then 
 					cells[cy][cx].projectedtype = checkedtype
 					cells[cy][cx].projectedrot = checkedrot
 					cells[cy][cx].projectedupd = checkedupd
@@ -1251,7 +1251,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					local oldcell = CopyCell(cx,cy)
 					--Added because of Qwerty.R_Dev#9850
 					nilifyData(storedcell)
-					if cells[cy][cx].ctype ~= 46 or storedcell.ctype == 0 or storedcell.protected then
+					if cells[cy][cx].ctype ~= 46 or storedcell.ctype == 0 or storedcell.protected or not isFungal(cells[cy][cx].ctype) then
 						cells[cy][cx] = CopyTable(storedcell)
 					end
 					cells[cy][cx].rot = (storedcell.rot + addedrot)%4
