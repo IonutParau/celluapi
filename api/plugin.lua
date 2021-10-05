@@ -1,5 +1,8 @@
 local plugs = {}
 local initializedInitPlugs = false
+local currentPlugin = ""
+local isInPlugin = false
+local pluginBindings = {}
 
 for _, name in pairs(love.filesystem.getDirectoryItems('plugins')) do
   local nameSplit = split(name, '.')
@@ -7,6 +10,22 @@ for _, name in pairs(love.filesystem.getDirectoryItems('plugins')) do
     local pluginName = nameSplit[1]
     plugs[pluginName] = love.filesystem.load('plugins/' .. name)
   end
+end
+
+function RunPluginBinding(functionName, ...)
+  for _, binding in pairs(pluginBindings) do
+    if type(binding[functionName]) == "function" then
+      binding[functionName](...)
+    end
+  end
+end
+
+function BindPluginFunctions(functionName, func)
+  if isInPlugin == false then return end
+
+  if not pluginBindings[currentPlugin] then pluginBindings[currentPlugin] = {} end
+
+  pluginBindings[currentPlugin][functionName] = func
 end
 
 function loadInitialPlugins()
@@ -32,6 +51,9 @@ function GetPlugin(plugin)
     modcache = CopyTable(modcache)
   }
 
+  currentPlugin = plugin
+  isInPlugin = true
+
   local p = plugs[plugin]()
 
   listorder = copies.listorder
@@ -43,6 +65,9 @@ function GetPlugin(plugin)
   if #(copies.tex) ~= #tex then
     tex = copies.tex
   end
+
+  currentPlugin = ""
+  isInPlugin = false
 
   GetPlugin = copies.plugingetter
   modcache = copies.modcache

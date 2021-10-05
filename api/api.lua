@@ -3,7 +3,6 @@ audio = require "api/audio"
 save = require("api/save")
 MB = require "libs.ModBinder"
 syn = require "libs.Synapse"
-eml = require("libs.E-ML")
 conf = require("api.config")
 sec = require("api.security")
 
@@ -85,27 +84,23 @@ initialCells = {}
 loadConfig()
 
 loadInitialPlugins()
-
---loadModLoader()
-if not external() then
-	if config['auto_detect_mods'] == 'true' then
-		local files = {}
-		local e = ""
-		for _, file in pairs(love.filesystem.getDirectoryItems('')) do
-			local fileSplit = split(file, '.')
-			if tostring(fileSplit[#fileSplit]) == 'lua' then
-				files[#files+1] = fileSplit[1]
-			end
+if config['auto_detect_mods'] == 'true' then
+	local files = {}
+	local e = ""
+	for _, file in pairs(love.filesystem.getDirectoryItems('')) do
+		local fileSplit = split(file, '.')
+		if tostring(fileSplit[#fileSplit]) == 'lua' then
+			files[#files+1] = fileSplit[1]
 		end
-		for _, mod in pairs(files) do
-			if mod ~= 'main' and mod ~= 'conf' then
-				mods[#mods+1] = mod	
-			end
+	end
+	for _, mod in pairs(files) do
+		if mod ~= 'main' and mod ~= 'conf' then
+			mods[#mods+1] = mod	
 		end
-	else
-		for line in love.filesystem.lines('mods.txt') do 
-			mods[#mods+1] = line
-		end
+	end
+else
+	for line in love.filesystem.lines('mods.txt') do 
+		mods[#mods+1] = line
 	end
 end
 
@@ -191,20 +186,7 @@ end
 function initMods()
 	if #mods > 0 then love.window.setTitle(love.window.getTitle() .. " (") end
   for i=1,#mods,1 do
-    local mod
-		if external() then
-			print(getCorrectPath(mods[i]))
-			local chunk, errormsg = love.filesystem.load('C:/Users/ionut/AppData/Roaming/LOVE/CelLuAPI/Mods')
-			print(chunk())
-			if chunk == nil then
-				mod = true
-			else
-				mod = chunk()
-			end
-			if mod == nil then mod = true end
-		else
-			mod = require(mods[i])
-		end
+    local mod = require(mods[i])
 		if type(mod) == "table" then
 			modcache[mods[i]] = mod
 		end

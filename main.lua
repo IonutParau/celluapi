@@ -3557,6 +3557,7 @@ function love.update(dt)
 	itime = math.min(itime + dt,delay)
 	enemyparticles:update(dt)
 	modsCustomUpdate(dt)
+	RunPluginBinding("update", dt)
 end
 
 function love.draw()
@@ -3738,6 +3739,8 @@ function love.draw()
 	else
 		love.keyboard.setTextInput(false)
 	end
+	local dt = love.timer.getDelta()
+	RunPluginBinding("draw", dt, 1 / dt)
 	modsCustomDraw()
 end
 
