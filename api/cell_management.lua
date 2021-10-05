@@ -13,6 +13,19 @@ local unmovableData = {}
 local flippered = {}
 local unfreezable = {}
 local fungals = {}
+local sidedtrash = {}
+
+function SetSidedTrash(id, callback)
+  id = getRealID(id)
+  if getCellType(id) ~= "sidetrash" then
+    error("Attempt to add sided trash callback to cell without sidetrash type.")
+  end
+  sidedtrash[id] = callback
+end
+
+function GetSidedTrash(id)
+  return sidedtrash[id]
+end
 
 function isFungal(id)
   return (fungals[id] ~= nil)
@@ -86,7 +99,10 @@ function getCellType(id)
 end
 
 function bindDivergerFunction(id, divergerFunction)
-  if getCellType(id) ~= "diverger" then return end
+  id = getRealID(id)
+  if getCellType(id) ~= "diverger" then
+    error("Attempt to add diverger callback to cell without diverger type.")
+  end
   moddedDivergers[id] = divergerFunction
 end
 
@@ -135,6 +151,7 @@ function addCell(label, texture, push, ctype, invisible, index, weight)
     cellWeights[cellID] = weight
   end
   ctype = ctype or "normal"
+  cellTypes[cellID] = ctype
   if ctype == "mover" then
     moddedMovers[cellID] = true
   elseif ctype == "enemy" then
@@ -145,8 +162,9 @@ function addCell(label, texture, push, ctype, invisible, index, weight)
     moddedDivergers[cellID] = function(x, y, rot) return rot end
   elseif ctype == "fungal" then
     fungals[cellID] = true
+  elseif ctype == "sidetrash" then
+    SetSidedTrash(cellID, function(cx, cy, direction) return true end)
   end
-  cellTypes[cellID] = ctype
   texsize[cellID] = {}
   texsize[cellID].w = tex[cellID]:getWidth()
   texsize[cellID].h = tex[cellID]:getHeight()

@@ -1131,10 +1131,10 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				cy = cy + 1
 			end
 			if cx < 0 or cy < 0 then error(cx.." "..cy..":"..x.." "..y) end
-			if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or  cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
+			if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true) or  cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
 				if storedcell.ctype ~= 0 then
 					love.audio.play(destroysound)
-					if isModdedTrash(cells[cy][cx].ctype) then
+					if isModdedTrash(cells[cy][cx].ctype) or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true) then
 						modsOnTrashEat(cells[cy][cx].ctype, cx, cy, storedcell, prevx, prevy)
 					end
 					canPushCell(cx, cy, prevx, prevy, "push")
@@ -1294,9 +1294,12 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 			elseif direction == 1 then
 				cy = cy + 1
 			end
-			if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or not cells[y][x].protected and (cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23)
+			if cells[cy][cx].ctype == 0 or cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true) or cells[cy][cx].ctype == 50 or not cells[y][x].protected and (cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23)
 			or (cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 and cells[cy][cx].rot%2 == (direction+1)%2) or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
 				if isModdedTrash(cells[cy][cx].ctype) then
+					modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[prevy][prevx], prevx, prevy)
+				end
+				if GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)() then
 					modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[prevy][prevx], prevx, prevy)
 				end
 				break
@@ -1454,9 +1457,12 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				elseif direction == 1 then
 					cy = cy - 1
 				end
-				if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or moddedBombs[cells[cy][cx].ctype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
+				if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true) or moddedBombs[cells[cy][cx].ctype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
 					if reps ~= 1 then
 						if isModdedTrash(cells[cy][cx].ctype) then
+							modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[lastcy][lastcx], lastcy, lastcx)
+						end
+						if GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true then
 							modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[lastcy][lastcx], lastcy, lastcx)
 						end
 						cells[lastcy][lastcx].ctype = 0
@@ -2856,7 +2862,7 @@ function DoDriller(x,y,dir)
 	local x2,y2 = x,y
 	if dir == 0 then x2 = x+1 elseif dir == 2 then x2 = x-1 end
 	if dir == 1 then y2 = y+1 elseif dir == 3 then y2 = y-1 end
-	if cells[y2][x2].ctype ~= 11 and cells[y2][x2].ctype ~= 50 and cells[y2][x2].ctype ~= -1 and cells[y2][x2].ctype ~= 40 and not isModdedTrash(cells[y2][x2].ctype) then
+	if cells[y2][x2].ctype ~= 11 and cells[y2][x2].ctype ~= 50 and cells[y2][x2].ctype ~= -1 and cells[y2][x2].ctype ~= 40 and not isModdedTrash(cells[y2][x2].ctype) and not (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype) == true) then
 		if cells[y2][x2].ctype > initialCellCount then
 			local canPush = canPushCell(x2, y2, x, y, "drill")
 			if not canPush then
@@ -2868,7 +2874,7 @@ function DoDriller(x,y,dir)
 		cells[y2][x2] = oldcell
 		SetChunk(x,y,cells[y][x].ctype)
 		SetChunk(x2,y2,cells[y2][x2].ctype)
-	elseif cells[y2][x2].ctype == 11 or cells[y2][x2].ctype == 50 or isModdedTrash(cells[y2][x2].ctype) then
+	elseif cells[y2][x2].ctype == 11 or cells[y2][x2].ctype == 50 or isModdedTrash(cells[y2][x2].ctype) or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype) == true) then
 		cells[y][x].ctype = 0
 		if cells[y2][x2].ctype == 50 then
 			if x2 < width-1 and (not cells[y2][x2+1].protected and cells[y2][x2+1].ctype ~= -1 and cells[y2][x2+1].ctype ~= 11 and cells[y2][x2+1].ctype ~= 40 and cells[y2][x2+1].ctype ~= 50) then cells[y2][x2+1].ctype = 0 end
@@ -2876,7 +2882,7 @@ function DoDriller(x,y,dir)
 			if y2 < height-1 and (not cells[y2+1][x2].protected and cells[y2+1][x2].ctype ~= -1 and cells[y2+1][x2].ctype ~= 11 and cells[y2+1][x2].ctype ~= 40 and cells[y2+1][x2].ctype ~= 50) then cells[y2+1][x2].ctype = 0 end
 			if y2 > 0 and (not cells[y2-1][x2].protected and cells[y2-1][x2].ctype ~= -1 and cells[y2-1][x2].ctype ~= 11 and cells[y2-1][x2].ctype ~= 40 and cells[y2-1][x2].ctype ~= 50) then cells[y2-1][x2].ctype = 0 end
 		end
-		if isModdedTrash(cells[y2][x2].ctype) then
+		if isModdedTrash(cells[y2][x2].ctype) or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype) == true) then
 			modsOnTrashEat(cells[y2][x2].ctype, x2, y2, cells[y][x], x, y)
 		end
 		love.audio.play(destroysound)
