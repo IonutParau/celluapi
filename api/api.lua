@@ -105,6 +105,7 @@ end
 
 function DoModded(id, x, y, rot)
 	cells[y][x].updated = true
+	RunPluginBinding("cell-update", id, x, y, rot)
   for _, mod in pairs(modcache) do
     if mod.update ~= nil then
       mod.update(id, x, y, rot)
