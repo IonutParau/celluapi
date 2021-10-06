@@ -83,7 +83,6 @@ initialCellCount = 0
 initialCells = {}
 loadConfig()
 
-loadInitialPlugins()
 if config['auto_detect_mods'] == 'true' then
 	local files = {}
 	local e = ""

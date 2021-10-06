@@ -3383,6 +3383,7 @@ function love.load()
 			initialCells[#initialCells+1] = listorder[i]
 			cellsForIDManagement[#cellsForIDManagement+1] = listorder[i]
 		end
+		loadInitialPlugins()
 		initMods() -- Please work
 	end
 	firstLoad = false
