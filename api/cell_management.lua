@@ -14,6 +14,19 @@ local flippered = {}
 local unfreezable = {}
 local fungals = {}
 local sidedtrash = {}
+local sidedenemy = {}
+
+function SetSidedEnemy(id, callback)
+  id = getRealID(id)
+  if getCellType(id) ~= "sideenemy" then
+    error("Attempt to add sided enemy callback to cell without sideenemy type.")
+  end
+  sidedenemy[id] = callback
+end
+
+function GetSidedEnemy(id)
+  return sidedenemy[id]
+end
 
 function SetSidedTrash(id, callback)
   id = getRealID(id)
@@ -164,6 +177,8 @@ function addCell(label, texture, push, ctype, invisible, index, weight)
     fungals[cellID] = true
   elseif ctype == "sidetrash" then
     SetSidedTrash(cellID, function(cx, cy, direction) return true end)
+  elseif ctype == "sideenemy" then
+    SetSidedEnemy(cellID, function(cx, cy, direction) return true end)
   end
   texsize[cellID] = {}
   texsize[cellID].w = tex[cellID]:getWidth()

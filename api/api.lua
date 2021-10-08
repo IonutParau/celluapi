@@ -238,6 +238,7 @@ function modsTick()
 end
 
 function modsOnKeyPressed(key, code, continous)
+	RunPluginBinding("key-down", key, code, continous)
 	for _, mod in pairs(modcache) do
 		if type(mod.onKeyPressed) == "function" then
 			mod.onKeyPressed(key, code, continous)
@@ -278,6 +279,7 @@ function modsOnUnpause()
 end
 
 function modsOnMousePressed(x, y, button, istouch, presses)
+	RunPluginBinding("mouse-down", x, y, button, istouch, presses)
 	for _, mod in pairs(modcache) do
 		if type(mod.onMousePressed) == "function" then
 			mod.onMousePressed(x, y, button, istouch, presses)
@@ -286,6 +288,7 @@ function modsOnMousePressed(x, y, button, istouch, presses)
 end
 
 function modsOnMouseReleased(x, y, button, istouch, presses)
+	RunPluginBinding("mouse-up", x, y, button, istouch, presses)
 	for _, mod in pairs(modcache) do
 		if type(mod.onMouseReleased) == "function" then
 			mod.onMouseReleased(x, y, button, istouch, presses)
@@ -294,6 +297,7 @@ function modsOnMouseReleased(x, y, button, istouch, presses)
 end
 
 function modsOnCellDraw(id, x, y, dir)
+	RunPluginBinding("cell-render", id, x, y, dir)
 	for _, mod in pairs(modcache) do
 		if type(mod.onCellDraw) == "function" then
 			mod.onCellDraw(id, x, y, dir)
@@ -334,6 +338,7 @@ function modsOnSetInitial()
 end
 
 function modsOnMouseScroll(x, y)
+	RunPluginBinding("mouse-scroll", x, y)
 	for _, mod in pairs(modcache) do
 		if type(mod.onMouseScroll) == "function" then
 			mod.onMouseScroll(x, y)
