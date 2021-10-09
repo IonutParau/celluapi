@@ -1245,6 +1245,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					canPushCell(prevx, prevy, 0, 0, "push")
 					break
 				else
+					storedcell.rot = (storedcell.rot + addedrot) % 4
 					local oldcell = CopyTable(cells[cy][cx]) -- Modified by CelLuAPI for better things
 					--Added because of Qwerty.R_Dev#9850
 					nilifyData(storedcell)

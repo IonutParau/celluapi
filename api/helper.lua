@@ -32,11 +32,12 @@ function walkDivergedPath(from_x, from_y, to_x, to_y, depth)
   end
 
   if moddedDivergers[cells[to_y][to_x].ctype] ~= nil then
-    local dir = moddedDivergers[cells[to_y][to_x].ctype](to_x, to_y, dir)
-    if dir == nil then
+    local mdir = moddedDivergers[cells[to_y][to_x].ctype](to_x, to_y, dir)
+    if mdir == nil then
       return {
         x = to_x,
-        y = to_y
+        y = to_y,
+        dir = dir,
       }
     end
 
@@ -54,7 +55,8 @@ function walkDivergedPath(from_x, from_y, to_x, to_y, depth)
     else
       return {
         x = to_x,
-        y = to_y
+        y = to_y,
+        dir = dir,
       }
     end
 
@@ -83,7 +85,8 @@ function walkDivergedPath(from_x, from_y, to_x, to_y, depth)
     else
       return {
         x = to_x,
-        y = to_y
+        y = to_y,
+        dir = dir,
       }
     end
   elseif cells[to_y][to_x].ctype == 38 then
@@ -91,7 +94,8 @@ function walkDivergedPath(from_x, from_y, to_x, to_y, depth)
   else
     return {
       x = to_x,
-      y = to_y
+      y = to_y,
+      dir = dir,
     }
   end
 end
