@@ -10,6 +10,8 @@ function split(s, delimiter)
   return result
 end
 
+local hexstr = "0123456789ABCDEF"
+
 function decimalToHex(num)
   if num == 0 then
       return '0'
@@ -19,7 +21,6 @@ function decimalToHex(num)
       neg = true
       num = num * -1
   end
-  local hexstr = "0123456789ABCDEF"
   local result = ""
   while num > 0 do
       local n = num % 16
@@ -30,6 +31,33 @@ function decimalToHex(num)
       result = '-' .. result
   end
   return result
+end
+
+function hexToDecimal(hex)
+  -- If negative activate cheat code.
+  if string.sub(hex, 1, 1) == '-' then
+    return hexToDecimal(string.sub(hex, 2, string.len(hex))) * -1
+  end
+
+  -- Generate decypher table because....... because.
+  local decypherTable = {}
+  for i=1,string.len(hexstr) do
+    decypherTable[string.sub(hexstr, i, i)] = (i-1)
+  end
+
+  -- Number
+  local num = 0
+
+  -- Decypher time with basic O(n) algorithm
+  for i=1,string.len(hex) do
+    local n = string.len(hex) - i
+    local c = string.sub(hex, i, i)
+    local val = decypherTable[c]
+    local n2 = 16^n * val
+    num = num + n2
+  end
+
+  return num
 end
 
 -- Encode the single cell
@@ -104,8 +132,8 @@ end
 -- Decode the whole grid
 function DecodeAP1(str)
   local code = split(str, ';')
-  width = tonumber(code[2], 16)
-  height = tonumber(code[3], 16)
+  width = hexToDecimal(code[2])
+  height = hexToDecimal(code[3])
   code[#code] = nil
 
   local cellList = {}
@@ -116,7 +144,7 @@ function DecodeAP1(str)
       local thingies = split(v, '|')
       local id
       if thingies[1] == "v" then
-        id = tonumber(thingies[2], 16)
+        id = hexToDecimal(thingies[2])
       elseif thingies[1] == "m" then
         id = getCellIDByLabel(thingies[2])
       end
@@ -130,7 +158,7 @@ function DecodeAP1(str)
           cell.placeable = true
         end
       end
-      local count = tonumber(thingies[4], 16)
+      local count = hexToDecimal(thingies[4])
       for i=1,count do
         table.insert(cellList, cell)
       end

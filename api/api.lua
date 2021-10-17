@@ -5,6 +5,7 @@ MB = require "libs.ModBinder"
 syn = require "libs.Synapse"
 conf = require("api.config")
 sec = require("api.security")
+MS = require("libs.ModShare")
 
 config = {}
 modcache = {}
