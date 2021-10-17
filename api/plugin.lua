@@ -49,7 +49,6 @@ function GetPlugin(plugin)
     moddedDivergers = CopyTable(moddedDivergers),
     tex = CopyTable(tex),
     plugingetter = GetPlugin,
-    modcache = CopyTable(modcache)
   }
 
   currentPlugin = plugin
@@ -71,7 +70,6 @@ function GetPlugin(plugin)
   isInPlugin = false
 
   GetPlugin = copies.plugingetter
-  modcache = copies.modcache
   
   return p
 end

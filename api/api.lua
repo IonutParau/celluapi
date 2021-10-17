@@ -100,7 +100,9 @@ if config['auto_detect_mods'] == 'true' then
 	end
 else
 	for line in love.filesystem.lines('mods.txt') do 
-		mods[#mods+1] = line
+		if string.len(line) > 1 then
+			mods[#mods+1] = line
+		end
 	end
 end
 
