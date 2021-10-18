@@ -1,3 +1,29 @@
+Options = {}
+Options.mover = {type = "mover"} -- For movers
+Options.puller = {type = "mover"} -- For pullers
+Options.trash = {type = "trash"} -- For trash cells
+Options.enemy = {type = "enemy"} -- For enemy cells
+Options.fungal = {type = "fungal", push = function(cx, cy, cdir, px, py, pdir, ptype) cells[py][px].ctype = cells[cy][cx].ctype return true end} -- For fungals
+Options.sidetrash = {type = "fungal"} -- For side trash cells
+Options.sideenemy = {type = "sideenemy"} -- For side enemy cells
+Options.diverger = {type = "diverger"} -- For diverger cells
+Options.invisible = {invisible = true} -- For invisible cells
+Options.unpushable = {push = function() return false end} -- For unpushable cells
+Options.ungenable = {gen = function() return false end} -- For ungenble cells
+
+-- Simple merger to merge different options
+Options.combine = function(...)
+  local combined = {}
+  for _, option in pairs(...) do
+    local copiedOption = CopyTable(option)
+    for k, v in pairs(copiedOption) do
+      combined[k] = v
+    end
+  end
+
+  return combined
+end
+
 function calculateCellPosition(x, y)
   return {
     x = math.floor((x - zoom/2 + offx)/zoom),

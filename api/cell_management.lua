@@ -15,6 +15,12 @@ local unfreezable = {}
 local fungals = {}
 local sidedtrash = {}
 local sidedenemy = {}
+local genfuncs = {}
+
+function CanGenCell(genID, genx, geny, gendid, gendx, gendy, gendir)
+  if not genfuncs[gendid] then return true end
+  return genfuncs[gendid](gendid, gendx, gendy, genID, genx, geny, gendir)
+end
 
 function SetSidedEnemy(id, callback)
   id = getRealID(id)
@@ -143,13 +149,26 @@ function addModdedWall(ctype)
   walls[#walls + 1] = ctype
 end
 
-function addCell(label, texture, push, ctype, invisible, index, weight)
+--- @param label string
+--- @param texture string
+--- @param options table
+--- @return number
+function addCell(label, texture, options)
+  if type(label) ~= "string" then return nil end
+  if type(texture) ~= "string" then return nil end
   if label == "vanilla" or label == "unknown" then
     error("Invalid label for custom cell")
   end
   local cellID = #cellsForIDManagement+1
   tex[cellID] = love.graphics.newImage(texture)
-  invisible = invisible or false
+  -- Getting options
+  if type(options) ~= "table" then options = {} end
+  local push = options.push or (function() return true end)
+  local gen = options.gen or (function() return true end)
+  local invisible = (options.invisible) or false
+  local index = options.index
+  local weight = options.weight
+  local ctype = options.type
   if invisible == false then
     if not index then
       listorder[#listorder+1] = cellID
@@ -158,6 +177,7 @@ function addCell(label, texture, push, ctype, invisible, index, weight)
     end
   end
   pushabilitySheet[cellID] = push
+  genfuncs[cellID] = gen
   cellLabels[cellID] = label
   cellsForIDManagement[#cellsForIDManagement+1] = cellID
   if weight ~= nil then

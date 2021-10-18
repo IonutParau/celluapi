@@ -1827,7 +1827,8 @@ function DoSuperGenerator(x,y,dir)
 			cells[cy][cx].testvar = "genbreak"
 			break
 		elseif not ((cells[cy][cx].ctype == 37 and cells[cy][cx].rot%2 == direction%2) or cells[cy][cx].ctype == 38 or (cells[cy][cx].ctype == 48 and (cells[cy][cx].rot+2)%4 == direction)) then
-			if cells[cy][cx].ctype ~= 0 and cells[cy][cx].ctype ~= 40 then
+			local canGenCell = CanGenCell(cells[y][x].ctype, x, y, cells[cy][cx].ctype, cx, cy, dir)
+			if cells[cy][cx].ctype ~= 0 and cells[cy][cx].ctype ~= 40 and canGenCell then
 				local c = CopyCell(cx,cy)
 				c.rot = (c.rot+addedrot)%4
 				table.insert(copied,c)
@@ -1966,7 +1967,8 @@ function DoGenerator(x,y,dir,gendir,istwist,dontupdate)
 	end 
 	addedrot = addedrot + (gendir-dir)
 	cells[cy][cx].testvar = "gen'd"
-	if cells[cy][cx].ctype ~= 0 and cells[cy][cx].ctype ~= 40 then
+	local canGenCell = CanGenCell(cells[y][x].ctype, x, y, cells[cy][cx].ctype, cx, cy, gendir)
+	if cells[cy][cx].ctype ~= 0 and cells[cy][cx].ctype ~= 40 and canGenCell then
 		if istwist then
 			local gentype,genrot = cells[cy][cx].ctype,cells[cy][cx].rot+addedrot
 			if cells[y][x].rot%2 == 0 then
@@ -2208,7 +2210,8 @@ function DoReplicator(x,y,dir,update)
 		end
 	end 
 	cells[cy][cx].testvar = "gen'd"
-	if cells[cy][cx].ctype ~= 0 and cells[cy][cx].ctype ~= 40 then
+	local canGenCell = CanGenCell(cells[y][x].ctype, x, y, cells[cy][cx].ctype, cx, cy, dir)
+	if cells[cy][cx].ctype ~= 0 and cells[cy][cx].ctype ~= 40 and canGenCell then
 		local p = PushCell(x,y,dir,false,1,cells[cy][cx].ctype,cells[cy][cx].rot+addedrot,cells[cy][cx].ctype == 19,{cells[y][x].lastvars[1],cells[y][x].lastvars[2],(cells[cy][cx].rot+addedrot)%4},cells[cy][cx].protected,false)
 		if p then
 			local ox, oy = cx, cy
@@ -2766,8 +2769,9 @@ function DoSuperRepulser(x,y,dir)
 				break
 			end
 		end 
+		local canGenCell = CanGenCell(cells[y][x].ctype, x, y, cells[cy][cx].ctype, cx, cy, direction)
 		if cells[cy][cx].ctype ~= 0 and cells[cy][cx].ctype ~= 11 and cells[cy][cx].ctype ~= 50 and cells[cy][cx].ctype ~= 12 and cells[cy][cx].ctype ~= 23 and (cells[cy][cx].rot ~= (direction+2)%4 or cells[cy][cx].ctype ~= 43)
-		and (cells[cy][cx].ctype ~= 47 and cells[cy][cx].ctype ~= 48 or cells[cy][cx].rot ~= direction) and (cells[cy][cx].ctype < 31 or cells[cy][cx].ctype > 36 or cells[cy][cx].rot%2 == direction%2) then
+		and (cells[cy][cx].ctype ~= 47 and cells[cy][cx].ctype ~= 48 or cells[cy][cx].rot ~= direction) and (cells[cy][cx].ctype < 31 or cells[cy][cx].ctype > 36 or cells[cy][cx].rot%2 == direction%2) and canGenCell then
 			cells[cy][cx].scrosses = (cells[cy][cx].supdatekey == supdatekey and cells[cy][cx].scrosses or 0) + 1
 			cells[cy][cx].supdatekey = supdatekey
 			if cells[cy][cx].scrosses >= 999999999 then
