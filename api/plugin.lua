@@ -36,6 +36,10 @@ function loadInitialPlugins()
   end
 end
 
+function hasPlugin(p)
+  return (plugs[p] ~= nil)
+end
+
 function GetPlugin(plugin)
   if not plugs[plugin] then return nil end
   if plugin == currentPlugin then return nil end

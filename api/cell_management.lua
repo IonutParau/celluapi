@@ -159,6 +159,7 @@ function addCell(label, texture, options)
   if label == "vanilla" or label == "unknown" then
     error("Invalid label for custom cell")
   end
+  RunPluginBinding("post-cell-addition", label, texture, options)
   local cellID = #cellsForIDManagement+1
   tex[cellID] = love.graphics.newImage(texture)
   -- Getting options
@@ -206,6 +207,8 @@ function addCell(label, texture, options)
   texsize[cellID].w2 = tex[cellID]:getWidth()/2
   texsize[cellID].h2 = tex[cellID]:getHeight()/2
   moddedIDs[#moddedIDs+1] = cellID
+
+  RunPluginBinding("post-cell-addition", cellID, label, texture, options)
   return cellID
 end
 

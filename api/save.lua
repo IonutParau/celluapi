@@ -92,13 +92,9 @@ function encodeAP1()
   local str = "AP1;"
   str = str .. decimalToHex(width) .. ';'
   str = str .. decimalToHex(height) .. ';'
-  local cellList = {
+  local cellList = {}
 
-  }
-
-  local cellCounts = {
-
-  }
+  local cellCounts = {}
 
   for y=1,height-2,1 do
     for x=1,width-2,1 do
