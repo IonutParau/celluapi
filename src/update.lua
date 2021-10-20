@@ -5,7 +5,7 @@ require("src.update.intakers") -- For intakers
 require("src.update.supgens") -- For super generators
 require("src.update.gens") -- For generators
 require("src.update.replicators") -- For generators
-require("src.update.mold") -- For molds
+require("src.update.molds") -- For molds
 require("src.update.flippers") -- For flippers
 require("src.update.rotators") -- For rotators
 require("src.update.gear") -- For gears

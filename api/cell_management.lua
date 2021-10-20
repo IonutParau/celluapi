@@ -17,6 +17,12 @@ local sidedtrash = {}
 local sidedenemy = {}
 local genfuncs = {}
 
+function addAdvanced(options)
+  if type(options) ~= "table" then error("Options table must be table") end
+
+  return addCell(options.label, options.texture, options)
+end
+
 function CanGenCell(genID, genx, geny, gendid, gendx, gendy, gendir)
   if not genfuncs[gendid] then return true end
   return genfuncs[gendid](gendid, gendx, gendy, genID, genx, geny, gendir)
@@ -170,6 +176,10 @@ function addCell(label, texture, options)
   local index = options.index
   local weight = options.weight
   local ctype = options.type
+  
+  options = nil
+
+  -- Epic cell
   if invisible == false then
     if not index then
       listorder[#listorder+1] = cellID
