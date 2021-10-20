@@ -10,6 +10,9 @@ MS = require("libs.ModShare")
 config = {}
 modcache = {}
 
+--- @param mod string
+--- @param version string
+--- @return boolean
 function checkVersion(mod, version)
 	if modcache[mod] == nil then return false end
 	if modcache[mod].version == nil then return false end
@@ -40,6 +43,8 @@ function checkVersion(mod, version)
 	return true
 end
 
+--- @param mod string
+--- @return boolean
 function hasMod(mod)
 	for k, v in pairs(mods) do
 		if v == mod then
@@ -49,6 +54,7 @@ function hasMod(mod)
 	return false
 end
 
+--- @param d table
 function checkDependencies(d)
 	if type(d) == "table" then
 		for k, v in pairs(d) do
