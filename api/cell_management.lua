@@ -176,8 +176,6 @@ function addCell(label, texture, options)
   local index = options.index
   local weight = options.weight
   local ctype = options.type
-  
-  options = nil
 
   -- Epic cell
   if invisible == false then
