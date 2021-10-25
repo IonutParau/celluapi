@@ -137,7 +137,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					totalforce = 0
 				elseif checkedtype == 15 or (checkedtype == 47 or checkedtype == 48) and checkedrot == (direction+2)%4 then 
 					pushingdiverger = true
-				elseif checkedtype == 46 or isFungal(checkedtype) then 
+				elseif checkedtype == 46 then 
 					cells[cy][cx].projectedtype = checkedtype
 					cells[cy][cx].projectedrot = checkedrot
 					cells[cy][cx].projectedupd = checkedupd
@@ -303,10 +303,19 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					local oldcell = CopyTable(cells[cy][cx]) -- Modified by CelLuAPI for better things
 					--Added because of Qwerty.R_Dev#9850
 					nilifyData(storedcell)
-					if cells[cy][cx].ctype ~= 46 or storedcell.ctype == 0 or storedcell.protected or not isFungal(cells[cy][cx].ctype) then
-						cells[cy][cx] = CopyTable(storedcell)
+					if cells[cy][cx].ctype ~= 46 or storedcell.ctype == 0 or storedcell.protected then
+						cells[cy][cx].ctype = storedcell.ctype
+						cells[cy][cx].updated = storedcell.updated
+						cells[cy][cx].protected = storedcell.protected
 					end
-					cells[cy][cx] = CopyTable(storedcell)
+					cells[cy][cx].rot = storedcell.rot
+					cells[cy][cx].lastvars = CopyTable(storedcell.lastvars)
+					local storedCopy = CopyTable(storedcell)
+					for k, v in pairs(storedCopy) do
+						if k ~= "rot" and k ~= "ctype" and k ~= "protected" and k ~= "updated" and k ~= "lastvars" then
+							cells[cy][cx][k] = v
+						end
+					end
 					if dontpull then cells[cy][cx].pulleddir = direction end --thank you advancers, very cool
 					storedcell = oldcell
 					addedrot = 0
