@@ -6,3 +6,4 @@ plugins/*
 !plugins/toinit.txt
 tests
 tests/*
+pr.bat
