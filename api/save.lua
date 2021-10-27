@@ -136,6 +136,10 @@ function CopyTable(table)
   return copy
 end
 
+function encodeAP1()
+  encodeAP2()
+end
+
 -- Encode the whole grid
 function encodeAP2()
   local str = "AP2;"
