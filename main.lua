@@ -702,7 +702,7 @@ function love.mousepressed(x,y,b, istouch, presses)
 					end
 				end
 				
-				if not successful then
+				if not succesful then
 					love.audio.play(destroysound)
 				end
 			end
