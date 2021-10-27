@@ -642,7 +642,7 @@ function love.mousepressed(x,y,b, istouch, presses)
 			if config['use_k2'] == 'true' then
 				EncodeK2()
 			else
-				encodeAP2()
+				encodeAP1()
 			end
 			love.audio.play(beep)
 			typing = false
@@ -673,14 +673,6 @@ function love.mousepressed(x,y,b, istouch, presses)
 				undocells = nil
 			elseif string.sub(love.system.getClipboardText(),1,4) == "AP1;" then
 				DecodeAP1(love.system.getClipboardText())
-				inmenu = false
-				placecells = false
-				newwidth = width-2
-				newheight = height-2
-				love.audio.play(beep)
-				undocells = nil
-			elseif string.sub(love.system.getClipboardText(),1,4) == "AP2;" then
-				DecodeAP2(love.system.getClipboardText())
 				inmenu = false
 				placecells = false
 				newwidth = width-2
