@@ -642,7 +642,11 @@ function love.mousepressed(x,y,b, istouch, presses)
 			if config['use_k2'] == 'true' then
 				EncodeK2()
 			else
-				encodeAP2()
+				if CurrentSaving == "AP2" then
+					encodeAP2()
+				else
+					modsEncoding[CurrentSaving]()
+				end
 			end
 			love.audio.play(beep)
 			typing = false
@@ -688,7 +692,19 @@ function love.mousepressed(x,y,b, istouch, presses)
 				love.audio.play(beep)
 				undocells = nil
 			else
-				love.audio.play(destroysound)
+				local succesful = false
+				local txt = love.system.getClipboardText()
+				
+				for signature, decoding in pairs(modsDecoding) do
+					if string.sub(txt, 1, string.len(signature)+1) == (signature .. ';') then
+						succesful = true
+						decoding(txt)
+					end
+				end
+				
+				if not successful then
+					love.audio.play(destroysound)
+				end
 			end
 			typing = false
 		else

@@ -10,6 +10,16 @@ MS = require("libs.ModShare")
 config = {}
 modcache = {}
 
+modsEncoding = {}
+modsDecoding = {}
+CurrentSaving = "AP2";
+
+function CreateFormat(signature, encoding, decoding)
+	modsEncoding[signature] = encoding
+	modsDecoding[signature] = decoding
+	CurrentSaving = signature;
+end
+
 --- @param mod string
 --- @param version string
 --- @return boolean
