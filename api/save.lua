@@ -128,7 +128,7 @@ function encodeAP2Cell(cell, count)
   return str
 end
 
-function CopyTable(table)
+local function CopyTable(table)
   local copy = {}
   for k, v in pairs(table) do
     copy[k] = v
