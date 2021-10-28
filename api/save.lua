@@ -16,7 +16,7 @@ local cellkey = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!
 function decodebase74(input)
   -- If negative activate cheat code.
   if string.sub(input, 1, 1) == '-' then
-    return hexToDecimal(string.sub(input, 2)) * -1
+    return decodebase74(string.sub(input, 2)) * -1
   end
 
   -- Generate decypher table because....... because.

@@ -12,16 +12,42 @@ Options.unpushable = {push = function() return false end} -- For unpushable cell
 Options.ungenable = {gen = function() return false end} -- For ungenble cells
 
 -- Simple merger to merge different options
-Options.combine = function(...)
-  local combined = {}
-  for _, option in pairs(...) do
-    local copiedOption = CopyTable(option)
-    for k, v in pairs(copiedOption) do
-      combined[k] = v
-    end
+Options.combine = function(a, b)
+  local combined = CopyTable(a)
+  local copiedOption = CopyTable(b)
+  for k, v in pairs(copiedOption) do
+    combined[k] = v
   end
 
   return combined
+end
+
+function IsEqual(a, b)
+  if type(a) ~= type(b) then return false end
+
+  local t = type(a)
+
+  if t == "table" then
+    if #a ~= #b then return false end
+
+    for k, v in pairs(a) do
+      if b[k] == v then
+        return true
+      end
+    end
+
+    for k, v in pairs(b) do
+      if a[k] == v then
+        return true
+      end
+    end
+
+    return true
+  else
+    return (a == b)
+  end
+
+  return false
 end
 
 function calculateCellPosition(x, y)
