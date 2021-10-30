@@ -702,7 +702,14 @@ function love.mousepressed(x,y,b, istouch, presses)
 					end
 				end
 				
-				if not succesful then
+				if succesful then
+					inmenu = false
+					placecells = false
+					newwidth = width-2
+					newheight = height-2
+					love.audio.play(beep)
+					undocells = nil
+				else
 					love.audio.play(destroysound)
 				end
 			end
