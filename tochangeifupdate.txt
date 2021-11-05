@@ -1,0 +1,6 @@
+This file is only meant for the people working on CelLuAPI!
+
+Ok, so in case KyYay updates vanilla, here are the needed changes:
+- Split code because yes
+- Modify a lot of functions to work with API
+- Make rendering use predefined textures instead of cell textures
