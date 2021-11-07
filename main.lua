@@ -558,7 +558,7 @@ function love.draw()
 		if x > 170 and y > 420 and x < 230 and y < 480 then love.graphics.setColor(1,1,1,0.75) love.graphics.print("Close menu\n     (Esc)",165*winxm,480*winym,0,winxm,winym) else love.graphics.setColor(1,1,1,0.5) end
 		love.graphics.draw(tex.mover,200*winxm,450*winym,0,60*winxm/texsize.mover.w,60*winym/texsize.mover.h,texsize.mover.w2,texsize.mover.h2)
 		if x > 270 and y > 420 and x < 330 and y < 480 then love.graphics.setColor(1,1,1,0.75) love.graphics.print("Restart level\n   (Ctrl+R)",265*winxm,480*winym,0,winxm,winym) else love.graphics.setColor(1,1,1,0.5) end
-		love.graphics.draw(tex.redirector,300*winxm,450*winym,0,60*winxm/texsize.rotator_180.w,60*winym/texsize.rotator_180.h,texsize.rotator_180.w2,texsize.rotator_180.h2)
+		love.graphics.draw(tex.rotator_180,300*winxm,450*winym,0,60*winxm/texsize.rotator_180.w,60*winym/texsize.rotator_180.h,texsize.rotator_180.w2,texsize.rotator_180.h2)
 		if x > 370 and y > 420 and x < 430 and y < 480 then love.graphics.setColor(1,1,1,0.75) love.graphics.print("Clear level",369*winxm,480*winym,0,winxm,winym) else love.graphics.setColor(1,1,1,0.5) end
 		love.graphics.draw(tex.trash,400*winxm,450*winym,0,60*winxm/texsize.trash.w,60*winym/texsize.trash.h,texsize.trash.w2,texsize.trash.h2)
 		if x > 470 and y > 420 and x < 530 and y < 480 then love.graphics.setColor(1,1,1,0.75) love.graphics.print("Save level",470*winxm,480*winym,0,winxm,winym) else love.graphics.setColor(1,1,1,0.5) end
