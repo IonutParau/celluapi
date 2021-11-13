@@ -4,7 +4,7 @@ Options.puller = {type = "mover"} -- For pullers
 Options.trash = {type = "trash"} -- For trash cells
 Options.enemy = {type = "enemy"} -- For enemy cells
 Options.fungal = {type = "fungal", push = function(cx, cy, cdir, px, py, pdir, ptype) cells[py][px].ctype = cells[cy][cx].ctype return true end} -- For fungals
-Options.sidetrash = {type = "fungal"} -- For side trash cells
+Options.sidetrash = {type = "sidetrash"} -- For side trash cells
 Options.sideenemy = {type = "sideenemy"} -- For side enemy cells
 Options.diverger = {type = "diverger"} -- For diverger cells
 Options.invisible = {invisible = true} -- For invisible cells
@@ -31,13 +31,13 @@ function IsEqual(a, b)
     if #a ~= #b then return false end
 
     for k, v in pairs(a) do
-      if b[k] == v then
+      if IsEqual(b[k], v) then
         return true
       end
     end
 
     for k, v in pairs(b) do
-      if a[k] == v then
+      if IsEqual(b[k], v) then
         return true
       end
     end
@@ -53,7 +53,7 @@ end
 function calculateCellPosition(x, y)
   return {
     x = math.floor((x - zoom/2 + offx)/zoom),
-    y = math.floor((y - zoom/2 + offx)/zoom)
+    y = math.floor((y - zoom/2 + offy)/zoom)
   }
 end
 

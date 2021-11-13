@@ -152,8 +152,7 @@ UpdateDrillers,
 UpdateAdvancers,
 UpdatePullers,
 UpdateMovers,
-UpdateGates,
-UpdateModdedCells
+UpdateGates
 }
 
 function DoTick()

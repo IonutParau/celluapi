@@ -153,7 +153,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 			break
 		end
 		cells[cy][cx].updatekey = updatekey
-	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or isModdedTrash(checkedtype) or checkedtype == 50 or checkedtype == 43 and checkedrot == (direction+2)%4 or (checkedtype == 47 or checkedtype == 48) and checkedrot == direction and not checkedupd
+	until totalforce <= 0 or checkedtype == 0 or checkedtype == 11 or isModdedTrash(checkedtype) or (GetSidedTrash(checkedtype) ~= nil and GetSidedTrash(checkedtype)(cx, cy, direction)) or checkedtype == 50 or checkedtype == 43 and checkedrot == (direction+2)%4 or (checkedtype == 47 or checkedtype == 48) and checkedrot == direction and not checkedupd
 	--movement time
 	cells[cy][cx].testvar = "end"
 	if totalforce > 0 then
