@@ -1,3 +1,5 @@
+local json = require("libs/json")
+
 Options = {}
 Options.mover = {type = "mover"} -- For movers
 Options.puller = {type = "mover"} -- For pullers
@@ -10,15 +12,27 @@ Options.diverger = {type = "diverger"} -- For diverger cells
 Options.invisible = {invisible = true} -- For invisible cells
 Options.unpushable = {push = function() return false end} -- For unpushable cells
 Options.ungenable = {gen = function() return false end} -- For ungenble cells
+Options.neverupdate = {dontupdate = true} -- For cells that shouldn't be updated
+Options.staticupdate = {static = true} -- For cells that can use faster updating (basically, cells that don't care about their rotation)
 
--- Simple merger to merge different options
-Options.combine = function(a, b)
+function MergeTables(a, b)
   local combined = CopyTable(a)
   local copiedOption = CopyTable(b)
   for k, v in pairs(copiedOption) do
     combined[k] = v
   end
 
+  return combined
+end
+
+-- Simple merger to merge different options
+Options.combine = function(a, ...)
+  local combined = CopyTable(a)
+  local arg = {...}
+  for _, option in ipairs(arg) do
+    combined = MergeTables(combined, option)
+  end
+  error(json.encode(combined))
   return combined
 end
 
