@@ -14,6 +14,8 @@ modsEncoding = {}
 modsDecoding = {}
 CurrentSaving = "AP2";
 
+local modIndexes = {}
+
 function CreateFormat(signature, encoding, decoding)
 	modsEncoding[signature] = encoding
 	modsDecoding[signature] = decoding
@@ -24,9 +26,10 @@ end
 --- @param version string
 --- @return boolean
 function checkVersion(mod, version)
-	if modcache[mod] == nil then return false end
-	if modcache[mod].version == nil then return false end
-	if modcache[mod].version == version then return true end
+	local i = modIndexes[mod]
+	if modcache[i] == nil then return false end
+	if modcache[i].version == nil then return false end
+	if modcache[i].version == version then return true end
 
 	local comparison = split(split(version, ' ')[1], '.')
 
@@ -253,6 +256,7 @@ function initMods(forTests)
     	local mod = require(mods[i])
 			if type(mod) == "table" then
 				table.insert(modcache, mod)
+				modIndexes[mod] = #modcache
 			end
 			if i == #mods then
 				love.window.setTitle(love.window.getTitle() .. mods[i])
