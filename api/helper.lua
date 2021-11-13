@@ -65,8 +65,8 @@ end
 
 function calculateCellPosition(x, y)
   return {
-    x = math.floor((x - zoom/2 + offx)/zoom),
-    y = math.floor((y - zoom/2 + offy)/zoom)
+    x = math.ceil((x - zoom/2 + offx)/zoom),
+    y = math.ceil((y - zoom/2 + offy)/zoom)
   }
 end
 
