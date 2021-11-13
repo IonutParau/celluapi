@@ -32,7 +32,6 @@ Options.combine = function(a, ...)
   for _, option in ipairs(arg) do
     combined = MergeTables(combined, option)
   end
-  error(json.encode(combined))
   return combined
 end
 
