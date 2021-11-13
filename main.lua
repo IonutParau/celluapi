@@ -133,26 +133,26 @@ require("src.update")
 --Gates (because the input variables dont carry over to the next tick, so they need to be at the end in order to register anything that could activate an input)
 
 subticks = {
-UpdateFreezers,
-UpdateShields,
-UpdateMirrors,
-UpdateIntakers,
-UpdateSuperGenerators,
-UpdateGenerators,
-UpdateReplicators,
-UpdateMold,
-UpdateFlippers,
-UpdateRotators,
-UpdateGears,
-UpdateRedirectors,
-UpdateImpulsers,
-UpdateSuperRepulsers,
-UpdateRepulsers,
-UpdateDrillers,
-UpdateAdvancers,
-UpdatePullers,
-UpdateMovers,
-UpdateGates
+	UpdateFreezers,
+	UpdateShields,
+	UpdateMirrors,
+	UpdateIntakers,
+	UpdateSuperGenerators,
+	UpdateGenerators,
+	UpdateReplicators,
+	UpdateMold,
+	UpdateFlippers,
+	UpdateRotators,
+	UpdateGears,
+	UpdateRedirectors,
+	UpdateImpulsers,
+	UpdateSuperRepulsers,
+	UpdateRepulsers,
+	UpdateDrillers,
+	UpdateAdvancers,
+	UpdatePullers,
+	UpdateMovers,
+	UpdateGates
 }
 
 function DoTick()
