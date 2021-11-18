@@ -14,7 +14,7 @@ function UpdateGears()
 								jammed = true
 							end
 							if cells[y+cy][x+cx].ctype > initialCellCount then
-								if isModdedTrash(cells[y+cy][x+cx].ctype) or (GetSidedTrash(cells[y+cy][x+cx].ctype) ~= nil and GetSidedTrash(cells[y+cy][x+cx].ctype)(cx, cy, direction) == false) then
+								if isModdedTrash(cells[y+cy][x+cx].ctype) or (GetSidedTrash(cells[y+cy][x+cx].ctype) ~= nil and GetSidedTrash(cells[y+cy][x+cx].ctype)(x+cx, y+cy, direction) == false) then
 									jammed = true
 								else
 									jammed = not canPushCell(x+cx, y+cy, x, y, "gear")
