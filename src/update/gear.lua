@@ -9,6 +9,7 @@ function UpdateGears()
 						if i ~= 4 then
 							cx = i%3-1
 							cy = math.floor(i/3)-1
+							local direction = DirFromOff(cx, cy)
 							if cells[y+cy][x+cx].ctype == -1 or cells[y+cy][x+cx].ctype == 40 or cells[y+cy][x+cx].ctype == 17 or cells[y+cy][x+cx].ctype == 18 or cells[y+cy][x+cx].ctype == 11 or cells[y+cy][x+cx].ctype == 50 then
 								jammed = true
 							end
@@ -77,6 +78,7 @@ function UpdateGears()
 						if i ~= 4 then
 							cx = i%3-1
 							cy = math.floor(i/3)-1
+							local direction = DirFromOff(cx, cy)
 							if cells[y+cy][x+cx].ctype == -1 or cells[y+cy][x+cx].ctype == 40 or cells[y+cy][x+cx].ctype == 17 or cells[y+cy][x+cx].ctype == 18 or cells[y+cy][x+cx].ctype == 11 or cells[y+cy][x+cx].ctype == 50 then
 								jammed = true
 							end

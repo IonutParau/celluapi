@@ -3,6 +3,7 @@ ModBinder = {}
 ModBinder.version = "First-Build"
 
 function ModBinder.bindMod(modName)
+  local i = GetModIndex(modName)
   -- This function is for binding a mod
   local mod = {}
   local binding = {}
@@ -10,6 +11,6 @@ function ModBinder.bindMod(modName)
     mod[funcName] = func
     return binding
   end
-  modcache[modName] = mod
+  modcache[i] = mod
   return binding
 end

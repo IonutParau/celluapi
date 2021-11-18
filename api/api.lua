@@ -12,9 +12,18 @@ modcache = {}
 
 modsEncoding = {}
 modsDecoding = {}
-CurrentSaving = "AP2";
+CurrentSaving = "AP2"
 
 local modIndexes = {}
+
+function GetModIndex(mod)
+	return modIndexes[mod] or -1
+end
+
+function DirFromOff(ox, oy)
+	if ox > 0 then return 0 elseif oy < 0 then return 2 end
+	if oy > 0 then return 1 elseif oy < 0 then return 3 end
+end
 
 function CreateFormat(signature, encoding, decoding)
 	modsEncoding[signature] = encoding
@@ -269,6 +278,9 @@ function initMods(forTests)
 	for _, mod in ipairs(modcache) do
 		if type(mod.dependencies) == "table" then
 			checkDependencies(mod.dependencies)
+		end
+		if type(mod.plugDependencies) == "table" then
+			checkDependencies(mod.plugDependencies)
 		end
 		if type(mod.init) == "function" then
 			mod.init()
