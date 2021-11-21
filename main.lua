@@ -431,6 +431,7 @@ function love.draw()
 			end
 		end
 	end
+	modsOnGridRender()
 	love.graphics.setColor(1,1,1,0.25)
 	if selecting then love.graphics.rectangle("fill",math.floor((selx)*zoom-offx),math.floor((sely)*zoom-offy),selw*zoom,selh*zoom) end
 	love.graphics.setColor(1,1,1,0.5)

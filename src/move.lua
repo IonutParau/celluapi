@@ -581,15 +581,24 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 								-- 	modsOnTrashEat(cells[frontcy][frontcx].ctype, frontcx, frontcy, cells[cy][cx], cx, cy)
 								-- end
 								if cells[frontcy][frontcx].ctype == 50 then
-									if frontcx < width-1 and (not cells[frontcy][frontcx+1].protected and cells[frontcy][frontcx+1].ctype ~= -1 and cells[frontcy][frontcx+1].ctype ~= 11 and not isModdedTrash(cells[frontcy][frontcx+1].ctype) and cells[frontcy][frontcx+1].ctype ~= 40 and cells[frontcy][frontcx+1].ctype ~= 50) then cells[frontcy][frontcx+1].ctype = 0 end
-									if frontcx > 0 and (not cells[frontcy][frontcx-1].protected and cells[frontcy][frontcx-1].ctype ~= -1 and cells[frontcy][frontcx-1].ctype ~= 11 and not isModdedTrash(cells[frontcy][frontcx-1].ctype) and cells[frontcy][frontcx-1].ctype ~= 40 and cells[frontcy][frontcx-1].ctype ~= 50) then cells[frontcy][frontcx-1].ctype = 0 end
-									if frontcy < height-1 and (not cells[frontcy+1][frontcx].protected and cells[frontcy+1][frontcx].ctype ~= -1 and cells[frontcy+1][frontcx].ctype ~= 11 and not isModdedTrash(cells[frontcy+1][frontcx].ctype) and cells[frontcy+1][frontcx].ctype ~= 40 and cells[frontcy+1][frontcx].ctype ~= 50) then cells[frontcy+1][frontcx].ctype = 0 end
-									if frontcy > 0 and (not cells[frontcy-1][frontcx].protected and cells[frontcy-1][frontcx].ctype ~= -1 and cells[frontcy-1][frontcx].ctype ~= 11 and not isModdedTrash(cells[frontcy-1][frontcx].ctype) and cells[frontcy-1][frontcx].ctype ~= 40 and cells[frontcy-1][frontcx].ctype ~= 50) then cells[frontcy-1][frontcx].ctype = 0 end
+									if frontcx < width-1 and (not cells[frontcy][frontcx+1].protected and cells[frontcy][frontcx+1].ctype ~= -1 and cells[frontcy][frontcx+1].ctype ~= 11 and not isModdedTrash(cells[frontcy][frontcx+1].ctype) or (GetSidedTrash(cells[frontcy][frontcx+1].ctype) ~= nil and GetSidedTrash(cells[frontcy][frontcx+1].ctype)(frontcx+1, frontcy, 0)) and cells[frontcy][frontcx+1].ctype ~= 40 and cells[frontcy][frontcx+1].ctype ~= 50) then cells[frontcy][frontcx+1].ctype = 0 end
+									if frontcx > 0 and (not cells[frontcy][frontcx-1].protected and cells[frontcy][frontcx-1].ctype ~= -1 and cells[frontcy][frontcx-1].ctype ~= 11 and not isModdedTrash(cells[frontcy][frontcx-1].ctype) or (GetSidedTrash(cells[frontcy][frontcx-1].ctype) ~= nil and GetSidedTrash(cells[frontcy][frontcx-1].ctype)(frontcx-1, frontcy, 2)) and cells[frontcy][frontcx-1].ctype ~= 40 and cells[frontcy][frontcx-1].ctype ~= 50) then cells[frontcy][frontcx-1].ctype = 0 end
+									if frontcy < height-1 and (not cells[frontcy+1][frontcx].protected and cells[frontcy+1][frontcx].ctype ~= -1 and cells[frontcy+1][frontcx].ctype ~= 11 and not isModdedTrash(cells[frontcy+1][frontcx].ctype)  or (GetSidedTrash(cells[frontcy+1][frontcx].ctype) ~= nil and GetSidedTrash(cells[frontcy+1][frontcx].ctype)(frontcx, frontcy+1, 1))and cells[frontcy+1][frontcx].ctype ~= 40 and cells[frontcy+1][frontcx].ctype ~= 50) then cells[frontcy+1][frontcx].ctype = 0 end
+									if frontcy > 0 and (not cells[frontcy-1][frontcx].protected and cells[frontcy-1][frontcx].ctype ~= -1 and cells[frontcy-1][frontcx].ctype ~= 11 and not isModdedTrash(cells[frontcy-1][frontcx].ctype) or (GetSidedTrash(cells[frontcy-1][frontcx].ctype) ~= nil and GetSidedTrash(cells[frontcy-1][frontcx].ctype)(frontcx, frontcy-1, 3)) and cells[frontcy-1][frontcx].ctype ~= 40 and cells[frontcy-1][frontcx].ctype ~= 50) then cells[frontcy-1][frontcx].ctype = 0 end
 								end
 							end
 						elseif cells[frontcy][frontcx].ctype == 12 then
 							if cells[cy][cx].ctype ~= 0 then
 								love.audio.play(destroysound)
+								cells[frontcy][frontcx].ctype = 0
+								enemyparticles:setPosition(frontcx*20,frontcy*20)
+								enemyparticles:emit(50)
+							end
+						elseif isModdedEnemy(cells[frontcy][frontcx].ctype) or (GetSidedEnemy(cells[frontcy][frontcx].ctype) ~= nil and GetSidedEnemy(cells[frontcy][frontcx].ctype)(frontcx, frontcy, direction)) then
+							if cells[cy][cx].ctype ~= 0 then
+								if not IsSilent(cells[frontcy][frontcx].ctype) then
+									love.audio.play(destroysound)
+								end
 								cells[frontcy][frontcx].ctype = 0
 								enemyparticles:setPosition(frontcx*20,frontcy*20)
 								enemyparticles:emit(50)

@@ -442,6 +442,15 @@ function modsCustomUpdate(dt)
 	end
 end
 
+-- Blendi plz no
+function modsOnGridRender()
+	for _, mod in ipairs(modcache) do
+		if type(mod.onGridRender) == "function" then
+			mod.onGridRender()
+		end
+	end
+end
+
 function isModdedTrash(id)
 	return (moddedTrash[id] ~= nil)
 end
