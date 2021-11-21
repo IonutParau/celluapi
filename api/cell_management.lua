@@ -16,6 +16,19 @@ local fungals = {}
 local sidedtrash = {}
 local sidedenemy = {}
 local genfuncs = {}
+local silent = {}
+
+function IsSilent(id)
+  id = getRealID(id)
+
+  return silent[id] == true
+end
+
+function Silence(id) -- thot
+  id = getRealID(id)
+
+  silent[id] = not (silent[id] or false)
+end
 
 function addAdvanced(options)
   if type(options) ~= "table" then error("Options table must be table") end
@@ -179,6 +192,7 @@ function addCell(label, texture, options)
   local dontupdate = options.dontupdate or false
   local updateindex = options.updateindex
   local static = options.static or false
+  local silent = options.silent or false
 
   -- Epic cell
   if invisible == false then
@@ -218,6 +232,10 @@ function addCell(label, texture, options)
   texsize[cellID].w2 = tex[cellID]:getWidth()/2
   texsize[cellID].h2 = tex[cellID]:getHeight()/2
   moddedIDs[#moddedIDs+1] = cellID
+
+  if silent then
+    Silence(cellID)
+  end
 
   if dontupdate ~= true then
     local generatedSubtick = GenerateSubtick(cellID, DoModded, not static)
