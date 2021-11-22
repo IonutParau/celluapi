@@ -545,15 +545,15 @@ function love.draw()
 		if typing == 1 then love.graphics.print(newwidth.."_",menufontsmall,255*winxm,330*winym,0) else love.graphics.print(newwidth,menufontsmall,255*winxm,330*winym,0) end
 		if typing == 2 then love.graphics.print(newheight.."_",menufontsmall,455*winxm,330*winym,0) else love.graphics.print(newheight,menufontsmall,455*winxm,330*winym,0) end
 		if x > 170 and y > 420 and x < 230 and y < 480 then love.graphics.setColor(1,1,1,0.75) love.graphics.print("Close menu\n     (Esc)",menufontsmall,165*winxm,480*winym,0) else love.graphics.setColor(1,1,1,0.5) end
-		love.graphics.draw(tex[1],200*winxm,450*winym,0,60*winxm/texsize[1].w,60*winym/texsize[1].h,texsize[1].w2,texsize[1].h2)
+		love.graphics.draw(tex.mover,200*winxm,450*winym,0,60*winxm/texsize.mover.w,60*winym/texsize.mover.h,texsize.mover.w2,texsize.mover.h2)
 		if x > 270 and y > 420 and x < 330 and y < 480 then love.graphics.setColor(1,1,1,0.75) love.graphics.print("Restart level\n (Ctrl+R)",menufontsmall,265*winxm,480*winym,0) else love.graphics.setColor(1,1,1,0.5) end
-		love.graphics.draw(tex[10],300*winxm,450*winym,0,60*winxm/texsize[10].w,60*winym/texsize[10].h,texsize[10].w2,texsize[10].h2)
+		love.graphics.draw(tex.rotator_180,300*winxm,450*winym,0,60*winxm/texsize.rotator_180.w,60*winym/texsize.rotator_180.h,texsize.rotator_180.w2,texsize.rotator_180.h2)
 		if x > 370 and y > 420 and x < 430 and y < 480 then love.graphics.setColor(1,1,1,0.75) love.graphics.print("Clear level",menufontsmall,369*winxm,480*winym,0) else love.graphics.setColor(1,1,1,0.5) end
-		love.graphics.draw(tex[11],400*winxm,450*winym,0,60*winxm/texsize[11].w,60*winym/texsize[11].h,texsize[11].w2,texsize[11].h2)
+		love.graphics.draw(tex.trash,400*winxm,450*winym,0,60*winxm/texsize.trash.w,60*winym/texsize.trash.h,texsize.trash.w2,texsize.trash.h2)
 		if x > 470 and y > 420 and x < 530 and y < 480 then love.graphics.setColor(1,1,1,0.75) love.graphics.print("Save level",menufontsmall,470*winxm,480*winym,0) else love.graphics.setColor(1,1,1,0.5) end
-		love.graphics.draw(tex[2],500*winxm,450*winym,math.pi*1.5,60*winym/texsize[2].w,60*winxm/texsize[2].h,texsize[2].w2,texsize[2].h2)
+		love.graphics.draw(tex.generator,500*winxm,450*winym,math.pi*1.5,60*winym/texsize.generator.w,60*winxm/texsize.generator.h,texsize.generator.w2,texsize.generator.h2)
 		if x > 570 and y > 420 and x < 630 and y < 480 then love.graphics.setColor(1,1,1,0.75) love.graphics.print("Load level\n(V3/K1/K2)",menufontsmall,570*winxm,480*winym,0) else love.graphics.setColor(1,1,1,0.5) end
-		love.graphics.draw(tex[16],600*winxm,450*winym,math.pi*0.5,60*winym/texsize[16].w,60*winxm/texsize[16].h,texsize[16].w2,texsize[16].h2)
+		love.graphics.draw(tex.redirector,600*winxm,450*winym,math.pi*0.5,60*winym/texsize.redirector.w,60*winxm/texsize.redirector.h,texsize.redirector.w2,texsize.redirector.h2)
 	end
 	if showinstructions then
 		love.graphics.setColor(1,1,1,1)
