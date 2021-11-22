@@ -16,6 +16,19 @@ local fungals = {}
 local sidedtrash = {}
 local sidedenemy = {}
 local genfuncs = {}
+local silent = {}
+
+function IsSilent(id)
+  id = getRealID(id)
+
+  return silent[id] == true
+end
+
+function Silence(id) -- thot
+  id = getRealID(id)
+
+  silent[id] = not (silent[id] or false)
+end
 
 function addAdvanced(options)
   if type(options) ~= "table" then error("Options table must be table") end
@@ -165,7 +178,7 @@ function addCell(label, texture, options)
   if label == "vanilla" or label == "unknown" then
     error("Invalid label for custom cell")
   end
-  RunPluginBinding("post-cell-addition", label, texture, options)
+  RunPluginBinding("cell-addition", label, texture, options)
   local cellID = #cellsForIDManagement+1
   tex[cellID] = love.graphics.newImage(texture)
   -- Getting options
@@ -176,6 +189,10 @@ function addCell(label, texture, options)
   local index = options.index
   local weight = options.weight
   local ctype = options.type
+  local dontupdate = options.dontupdate or false
+  local updateindex = options.updateindex
+  local static = options.static or false
+  local silent = options.silent or false
 
   -- Epic cell
   if invisible == false then
@@ -215,6 +232,19 @@ function addCell(label, texture, options)
   texsize[cellID].w2 = tex[cellID]:getWidth()/2
   texsize[cellID].h2 = tex[cellID]:getHeight()/2
   moddedIDs[#moddedIDs+1] = cellID
+
+  if silent then
+    Silence(cellID)
+  end
+
+  if dontupdate ~= true then
+    local generatedSubtick = GenerateSubtick(cellID, DoModded, not static)
+    if type(updateindex) == "number" then
+      table.insert(subticks, updateindex, generatedSubtick)
+    else
+      table.insert(subticks, generatedSubtick)
+    end
+  end
 
   RunPluginBinding("post-cell-addition", cellID, label, texture, options)
   return cellID
