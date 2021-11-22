@@ -36,6 +36,21 @@ tex.copy = love.graphics.newImage("textures/copy.png")
 tex.cut = love.graphics.newImage("textures/cut.png") 
 tex.paste = love.graphics.newImage("textures/paste.png")
 tex.nonexistant = love.graphics.newImage("textures/nonexistant.png")
+
+-- Textures
+tex.mover = tex[1]
+tex.push = tex[4]
+tex.puller = tex[13]
+tex.advancer = tex[27]
+tex.redirector = tex[16]
+tex.rotator_180 = tex[10]
+tex.rotator_cw = tex[8]
+tex.rotator_ccw = tex[9]
+tex.mirror = tex[14]
+tex.trash = tex[11]
+tex.generator = tex[2]
+tex.super_generator = tex[54]
+
 --[[local path = love.filesystem.getSourceBaseDirectory()								--this crap doesn't work >:(
 if (love.filesystem.getInfo(path.."/cellua-textures") or {})[1] == "directory" then
 	for i=-2,48 do
@@ -54,6 +69,7 @@ for k,v in pairs(tex) do
 	texsize[k].w2 = tex[k]:getWidth()/2	--for optimization
 	texsize[k].h2 = tex[k]:getHeight()/2
 end
+
 listorder = {0,-2,40,-1,1,13,27,57,2,22,25,26,39,54,44,45,3,4,5,6,7,51,52,53,8,9,10,56,16,29,17,18,20,49,28,14,55,15,30,37,38,11,50,12,23,24,19,46,31,32,33,34,35,36,41,21,42,43,47,48}
 bgsprites,winx,winy,winxm,winymc = nil,nil,nil,nil,nil
 destroysound = love.audio.newSource("destroy.wav", "static")
@@ -116,27 +132,26 @@ require("src.update")
 --Gates (because the input variables dont carry over to the next tick, so they need to be at the end in order to register anything that could activate an input)
 
 subticks = {
-UpdateFreezers,
-UpdateShields,
-UpdateMirrors,
-UpdateIntakers,
-UpdateSuperGenerators,
-UpdateGenerators,
-UpdateReplicators,
-UpdateMold,
-UpdateFlippers,
-UpdateRotators,
-UpdateGears,
-UpdateRedirectors,
-UpdateImpulsers,
-UpdateSuperRepulsers,
-UpdateRepulsers,
-UpdateDrillers,
-UpdateAdvancers,
-UpdatePullers,
-UpdateMovers,
-UpdateGates,
-UpdateModdedCells
+	UpdateFreezers,
+	UpdateShields,
+	UpdateMirrors,
+	UpdateIntakers,
+	UpdateSuperGenerators,
+	UpdateGenerators,
+	UpdateReplicators,
+	UpdateMold,
+	UpdateFlippers,
+	UpdateRotators,
+	UpdateGears,
+	UpdateRedirectors,
+	UpdateImpulsers,
+	UpdateSuperRepulsers,
+	UpdateRepulsers,
+	UpdateDrillers,
+	UpdateAdvancers,
+	UpdatePullers,
+	UpdateMovers,
+	UpdateGates
 }
 
 function DoTick()
@@ -415,6 +430,7 @@ function love.draw()
 			end
 		end
 	end
+	modsOnGridRender()
 	love.graphics.setColor(1,1,1,0.25)
 	if selecting then love.graphics.rectangle("fill",math.floor((selx)*zoom-offx),math.floor((sely)*zoom-offy),selw*zoom,selh*zoom) end
 	love.graphics.setColor(1,1,1,0.5)
@@ -451,13 +467,13 @@ function love.draw()
 	if paused then
 		love.graphics.setColor(0.5,0.5,0.5,0.75)
 		love.graphics.setColor(1,1,1,0.5)
-		love.graphics.draw(tex[1],725*winxm,25*winym,0,60*winxm/texsize[1].w,60*winxm/texsize[1].h)
+		love.graphics.draw(tex.mover,725*winxm,25*winym,0,60*winxm/texsize.mover.w,60*winxm/texsize.mover.h)
 	else
 		love.graphics.setColor(1,1,1,0.5)
-		love.graphics.draw(tex[4],785*winxm,25*winym,math.pi/2,60*winxm/texsize[4].w,60*winxm/texsize[4].h)
+		love.graphics.draw(tex.push,785*winxm,25*winym,math.pi/2,60*winxm/texsize.push.w,60*winxm/texsize.push.h)
 	end
-	if undocells then love.graphics.draw(tex[27],725*winxm-150*winxm,25*winym,math.pi,60*winxm/texsize[27].w,60*winxm/texsize[27].h,texsize[27].w,texsize[27].h) end
-	love.graphics.draw(tex[16],725*winxm-75*winxm,25*winym,0,60*winxm/texsize[16].w,60*winxm/texsize[16].h)
+	if undocells then love.graphics.draw(tex.advancer,725*winxm-150*winxm,25*winym,math.pi,60*winxm/texsize.advancer.w,60*winxm/texsize.advancer.h,texsize.advancer.w,texsize.advancer.h) end
+	love.graphics.draw(tex.redirector,725*winxm-75*winxm,25*winym,0,60*winxm/texsize.redirector.w,60*winxm/texsize.redirector.h)
 	love.graphics.draw(tex.menu,25*winxm,25*winym,0,60*winxm/texsize.menu.w,60*winxm/texsize.menu.h)
 	love.graphics.draw(tex.zoomin,100*winxm,25*winym,0,60*winxm/texsize.zoomin.w,60*winxm/texsize.zoomin.h)
 	love.graphics.draw(tex.zoomout,175*winxm,25*winym,0,60*winxm/texsize.zoomout.w,60*winxm/texsize.zoomout.h)
@@ -470,19 +486,19 @@ function love.draw()
 	love.graphics.setColor(1,1,1,0.5)
 	if copied then
 		love.graphics.draw(tex.paste,25*winxm,25*winym+150*winxm,0,60*winxm/texsize.paste.w,60*winxm/texsize.paste.h)
-		love.graphics.draw(tex[14],100*winxm,25*winym+150*winxm,0,60*winxm/texsize[14].w,60*winxm/texsize[14].h)
-		love.graphics.draw(tex[14],235*winxm,25*winym+150*winxm,math.pi/2,60*winxm/texsize[14].w,60*winxm/texsize[14].h)
+		love.graphics.draw(tex.mirror,100*winxm,25*winym+150*winxm,0,60*winxm/texsize.mirror.w,60*winxm/texsize.mirror.h)
+		love.graphics.draw(tex.mirror,235*winxm,25*winym+150*winxm,math.pi/2,60*winxm/texsize.mirror.w,60*winxm/texsize.mirror.h)
 	end
-	love.graphics.draw(tex[13],715*winxm,475*winym-80*winxm,-math.pi/2,40*winxm/texsize[13].w,40*winxm/texsize[13].h,texsize[13].w)
-	love.graphics.draw(tex[13],755*winxm,475*winym-40*winxm,0,40*winxm/texsize[13].w,40*winxm/texsize[13].h)
-	love.graphics.draw(tex[13],715*winxm,475*winym,math.pi/2,40*winxm/texsize[13].w,40*winxm/texsize[13].h,0,texsize[13].h)
-	love.graphics.draw(tex[13],675*winxm,475*winym-40*winxm,math.pi,40*winxm/texsize[13].w,40*winxm/texsize[13].h,texsize[13].w,texsize[13].h)
-	love.graphics.draw(tex[9],755*winxm,475*winym-80*winxm,0,40*winxm/texsize[9].w,40*winxm/texsize[9].h)
-	love.graphics.draw(tex[8],675*winxm,475*winym-80*winxm,0,40*winxm/texsize[8].w,40*winxm/texsize[8].h)
-	love.graphics.draw(tex[1],755*winxm,475*winym,0,40*winxm/texsize[1].w,40*winxm/texsize[1].h)
-	love.graphics.draw(tex[1],675*winxm,475*winym,math.pi,40*winxm/texsize[1].w,40*winxm/texsize[1].h,texsize[1].w,texsize[1].h)
+	love.graphics.draw(tex.puller,715*winxm,475*winym-80*winxm,-math.pi/2,40*winxm/texsize.puller.w,40*winxm/texsize.puller.h,texsize.puller.w)
+	love.graphics.draw(tex.puller,755*winxm,475*winym-40*winxm,0,40*winxm/texsize.puller.w,40*winxm/texsize.puller.h)
+	love.graphics.draw(tex.puller,715*winxm,475*winym,math.pi/2,40*winxm/texsize.puller.w,40*winxm/texsize.puller.h,0,texsize.puller.h)
+	love.graphics.draw(tex.puller,675*winxm,475*winym-40*winxm,math.pi,40*winxm/texsize.puller.w,40*winxm/texsize.puller.h,texsize.puller.w,texsize.puller.h)
+	love.graphics.draw(tex.rotator_ccw,755*winxm,475*winym-80*winxm,0,40*winxm/texsize.rotator_ccw.w,40*winxm/texsize.rotator_ccw.h)
+	love.graphics.draw(tex.rotator_cw,675*winxm,475*winym-80*winxm,0,40*winxm/texsize.rotator_cw.w,40*winxm/texsize.rotator_cw.h)
+	love.graphics.draw(tex.mover,755*winxm,475*winym,0,40*winxm/texsize.mover.w,40*winxm/texsize.mover.h)
+	love.graphics.draw(tex.mover,675*winxm,475*winym,math.pi,40*winxm/texsize.mover.w,40*winxm/texsize.mover.h,texsize.mover.w,texsize.mover.h)
 	if not isinitial then
-		love.graphics.draw(tex[10],725*winxm,25*winym+75*winxm,0,60*winxm/texsize[10].w,60*winxm/texsize[10].h)
+		love.graphics.draw(tex.rotator_180,725*winxm,25*winym+75*winxm,0,60*winxm/texsize.rotator_180.w,60*winxm/texsize.rotator_180.h)
 		love.graphics.draw(tex.setinitial,725*winxm-150*winxm,25*winym+75*winxm,0,135*winxm/texsize.setinitial.w,60*winxm/texsize.setinitial.h)
 	end
 	local x = love.mouse.getX()/winxm
@@ -495,7 +511,6 @@ function love.draw()
 		love.graphics.setColor(0.5,0.5,0.5,0.5)
 		love.graphics.rectangle("fill",100*winxm,75*winym,600*winxm,450*winym)
 		love.graphics.setColor(1,1,1,1)
-
 		love.graphics.print("this is the menu",menufont,300*winxm,120*winym,0)
 		love.graphics.print("CelLuAPI by IonutDoesStuffYT#1595",menufontsmall,300*winxm,90*winym,0)
 		love.graphics.print("built on CelLua by KyYay",menufontsmall,335*winxm,105*winym,0)
@@ -508,7 +523,6 @@ function love.draw()
 		love.graphics.print("Debug (Can cause lag!)",menufontsmall,200*winxm,378*winym,0)
 		love.graphics.print("Fancy Graphix",menufontsmall,400*winxm,378*winym,0)
 		love.graphics.print("Subticking",menufontsmall,550*winxm,378*winym,0)
-
 		local modsString = "Running mods: "
 		for i=1,#mods,1 do
 			modsString = modsString .. mods[i] .. " "
