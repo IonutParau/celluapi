@@ -525,9 +525,9 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 				end
 				if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 12 or cells[cy][cx].ctype == 23 or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true) or moddedBombs[cells[cy][cx].ctype] ~= nil or cells[cy][cx].ctype >= 31 and cells[cy][cx].ctype <= 36 then
 					if reps ~= 1 then
-						if isModdedTrash(cells[cy][cx].ctype) or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true) then
-							modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[lastcy][lastcx], lastcx, lastcy)
-						end
+						-- if isModdedTrash(cells[cy][cx].ctype) or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true) then
+						-- 	modsOnTrashEat(cells[cy][cx].ctype, cx, cy, cells[lastcy][lastcx], lastcx, lastcy)
+						-- end
 						cells[lastcy][lastcx].ctype = 0
 					end
 					break
@@ -594,7 +594,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 								enemyparticles:setPosition(frontcx*20,frontcy*20)
 								enemyparticles:emit(50)
 							end
-						elseif isModdedEnemy(cells[frontcy][frontcx].ctype) or (GetSidedEnemy(cells[frontcy][frontcx].ctype) ~= nil and GetSidedEnemy(cells[frontcy][frontcx].ctype)(frontcx, frontcy, direction)) then
+						elseif isModdedBomb(cells[frontcy][frontcx].ctype) or (GetSidedEnemy(cells[frontcy][frontcx].ctype) ~= nil and GetSidedEnemy(cells[frontcy][frontcx].ctype)(frontcx, frontcy, direction)) then
 							if cells[cy][cx].ctype ~= 0 then
 								if not IsSilent(cells[frontcy][frontcx].ctype) then
 									love.audio.play(destroysound)
