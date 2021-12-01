@@ -17,6 +17,16 @@ local sidedtrash = {}
 local sidedenemy = {}
 local genfuncs = {}
 local silent = {}
+local biases = {}
+
+function GiveBias(id, bias)
+  if cellTypes[id] == "mover" then error("Attempt to give a non-mover special bias") end
+  biases[id] = bias
+end
+
+function GetBias(id)
+  return (biases[id] or 1)
+end
 
 function IsSilent(id)
   id = getRealID(id)
@@ -102,7 +112,7 @@ function makeFlipperTranslation(cellID)
 end
 
 function addFlipperTranslation(translator, translated, bothWays)
-  if not bothWays then bothWays = true end
+  if bothWays == nil then bothWays = true end
   
   translator = getRealID(translator)
   translated = getRealID(translated)
@@ -124,7 +134,7 @@ function nilifyData(cell)
 end
 
 function addUnmovableData(data, optionalDefault)
-  unmovableData[data] = optionalDefault
+  unmovableData[data] = optionalDefault or true
 end
 
 function removeUnmovableData(data)
@@ -250,7 +260,7 @@ function addCell(label, texture, options)
   return cellID
 end
 
-function canPushCell(cx, cy, px, py, pushing)
+function canPushCell(cx, cy, px, py, pushing, force)
   if (not cx) or (not cy) then
     return false
   end
@@ -260,5 +270,5 @@ function canPushCell(cx, cy, px, py, pushing)
   if pushabilitySheet[ctype] == nil then
     return false
   end
-  return pushabilitySheet[ctype](cx, cy, cdir, px, py, pdir, pushing)
+  return pushabilitySheet[ctype](cx, cy, cdir, px, py, pdir, pushing, force)
 end

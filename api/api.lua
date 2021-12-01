@@ -16,12 +16,22 @@ CurrentSaving = "AP2"
 
 local modIndexes = {}
 
+local pushcalls = {}
+
+-- function AddPushModifier(pushmod)
+-- 	table.insert(pushcalls, pushmod)
+-- end
+
+-- function GetPushModifiers()
+-- 	return CopyTable(pushcalls)
+-- end
+
 function GetModIndex(mod)
 	return modIndexes[mod] or -1
 end
 
 function DirFromOff(ox, oy)
-	if ox > 0 then return 0 elseif oy < 0 then return 2 end
+	if ox > 0 then return 0 elseif ox < 0 then return 2 end
 	if oy > 0 then return 1 elseif oy < 0 then return 3 end
 end
 
@@ -300,6 +310,14 @@ function CopyTable(table)
 	return copy
 end
 
+local function modsRun(b, ...)
+	for _, mod in ipairs(modcache) do
+		if type(mod[b]) == "function" then
+			mod[b](...)
+		end
+	end
+end
+
 function modsCustomDraw()
   for _, mod in ipairs(modcache) do
     if type(mod.customdraw) == "function" then
@@ -400,10 +418,10 @@ function modsOnClear()
 	end
 end
 
-function modsOnMove(id, x, y, dir)
+function modsOnMove(id, x, y, dir, direction, pushData)
 	for _, mod in ipairs(modcache) do
 		if type(mod.onMove) == "function" then
-			mod.onMove(id, x, y, dir)
+			mod.onMove(id, x, y, dir, direction, pushData)
 		end
 	end
 end
@@ -449,6 +467,18 @@ function modsOnGridRender()
 			mod.onGridRender()
 		end
 	end
+end
+
+function ModsOnCopy(x, y, w, h)
+	modsRun("onCopy", x, y, w, h)
+end
+
+function ModsOnPaste(x, y, w, h, pasting, original)
+	modsRun("onPaste", x, y, w, h, pasting, original)
+end
+
+function ModsOnCut(x, y, w, h, pasting, original)
+	modsRun("onCut", x, y, w, h, pasting, original)
 end
 
 function isModdedTrash(id)

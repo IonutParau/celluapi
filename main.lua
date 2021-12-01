@@ -805,7 +805,9 @@ function love.mousepressed(x,y,b, istouch, presses)
 				selecting = false
 			end
 			placecells = false
+			ModsOnCopy(selx, sely, selw, selh)
 		elseif selecting and x >= 175 and x <= 175+60 and y >= 25+75*(winxm/winym) and y <= 25+75*(winxm/winym)+60*(winxm/winym) then
+			local original = CopyTable(copied or {})
 			if selw > 0 then
 				copied = {}
 				for y=0,selh-1 do
@@ -826,6 +828,7 @@ function love.mousepressed(x,y,b, istouch, presses)
 				selecting = false
 			end
 			placecells = false
+			ModsOnCut(selx, sely, selw, selh, copied, original)
 		elseif x >= 25 and x <= 85 and y >= 25+150*(winxm/winym) and y <= 25+150*(winxm/winym)+60*(winxm/winym) and copied then
 			selecting = false
 			pasting = true
@@ -1048,6 +1051,7 @@ function love.mousepressed(x,y,b, istouch, presses)
 			sely = math.max(math.min(math.floor((love.mouse.getY()+offy)/zoom),height-2),1)
 		elseif pasting and b == 1 then
 			pasting = false
+			local original = {}
 			if math.floor((love.mouse.getX()+offx)/zoom) > 0 and math.floor((love.mouse.getX()+offx)/zoom) < width-#copied[0]-1 and math.floor((love.mouse.getY()+offy)/zoom) > 0 and math.floor((love.mouse.getY()+offy)/zoom) < height-#copied-1 then 
 				undocells = {}
 				for y=0,height-1 do
@@ -1062,7 +1066,9 @@ function love.mousepressed(x,y,b, istouch, presses)
 					end
 				end
 				for y=0,#copied do
+					original[y] = {}
 					for x=0,#copied[0] do
+						original[y][x] = CopyTable(copied[y][x])
 						cells[y+math.floor((love.mouse.getY()+offy)/zoom)][x+math.floor((love.mouse.getX()+offx)/zoom)].ctype = copied[y][x].ctype
 						cells[y+math.floor((love.mouse.getY()+offy)/zoom)][x+math.floor((love.mouse.getX()+offx)/zoom)].rot = copied[y][x].rot
 						cells[y+math.floor((love.mouse.getY()+offy)/zoom)][x+math.floor((love.mouse.getX()+offx)/zoom)].lastvars = {x+math.floor((love.mouse.getX()+offx)/zoom),y+math.floor((love.mouse.getY()+offy)/zoom),copied[y][x].rot}
@@ -1076,6 +1082,7 @@ function love.mousepressed(x,y,b, istouch, presses)
 				RefreshChunks()
 			end
 			placecells = false
+			ModsOnPaste(selx, sely, selw, selh, copied, original)
 		elseif pasting and b == 2 then
 			pasting = false
 			placecells = false
@@ -1259,7 +1266,9 @@ function love.keypressed(key, scancode, isrepeat)
 				end
 				selecting = false
 			end
+			ModsOnCopy(selx, sely, selw, selh)
 		elseif key == "x" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("lgui")) then
+			local original = CopyTable(copied or {})
 			if selecting and selh > 0 then
 				copied = {}
 				for y=0,selh-1 do
@@ -1279,6 +1288,7 @@ function love.keypressed(key, scancode, isrepeat)
 				end
 				selecting = false
 			end
+			ModsOnCut(selx, sely, selw, selh, copied, original)
 		elseif key == "z" and (love.keyboard.isDown("lctrl") or love.keyboard.isDown("lgui")) then
 			if undocells then
 				for y=0,height-1 do

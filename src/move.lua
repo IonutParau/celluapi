@@ -47,17 +47,29 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		local checkedprot = cells[cy][cx].projectedprot
 		local moddedCanPush = false
 		if checkedtype > initialCellCount then
-			moddedCanPush = canPushCell(cx, cy, prevx, prevy, "push")
+			moddedCanPush = canPushCell(cx, cy, prevx, prevy, "push", totalforce)
 		end
+		-- local pushData = {
+		-- 	px = prevx,
+		-- 	py = prevy,
+		-- 	cx = cx,
+		-- 	cy = cy,
+		-- 	direction = direction,
+		-- 	celltype = checkedtype,
+		-- 	cellrot = checkedrot,
+		-- 	cellupdate = checkedupd,
+		-- 	cellport = checkedprot,
+		-- 	addedrot = addedrot,
+		-- }
 		if checkedtype == 1 or checkedtype == 13 or checkedtype == 27 or checkedtype == 41 or moddedMovers[checkedtype] ~= nil then
 			if reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype) or ((GetSidedEnemy(lasttype) ~= nil and GetSidedEnemy(lasttype)(prevx, prevy, direction) == true))) then
 				break
 			else
 				if not pushingdiverger then	--any force towards the mover would go into the diverger so it doesnt count (also it makes some interactions symmetrical-er)
 					if checkedrot == direction and checkedtype ~= 13 then
-						totalforce = totalforce + 1
+						totalforce = totalforce + GetBias(checkedtype)
 					elseif checkedrot == (direction+2)%4 and checkedtype ~= 13 then
-						totalforce = totalforce - 1
+						totalforce = totalforce - GetBias(checkedtype)
 					end
 					if updateforces and direction%2 == checkedrot%2 then
 						cells[cy][cx].updated = true
@@ -80,7 +92,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		or checkedtype == 51 and direction ~= checkedrot 
 		or checkedtype == 52 and (direction ~= checkedrot and direction ~= (checkedrot-1)%4)
 		or checkedtype == 53 and direction == (checkedrot+2)%4
-		or checkedtype > initialCellCount and not canPushCell(cx, cy, prevx, prevy, "push") then
+		or checkedtype > initialCellCount and not canPushCell(cx, cy, prevx, prevy, "push", totalforce) then
 			if checkedtype ~= -1 and checkedtype ~= 40 and reps ~= 1 and not checkedprot and (lasttype == 12 or lasttype == 23 or isModdedBomb(lasttype) or ((GetSidedEnemy(lasttype) ~= nil and GetSidedEnemy(lasttype)(prevx, prevy, direction) == true))) then
 				break
 			else
@@ -163,9 +175,12 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 		local storedcell = {ctype = replacetype, rot = replacerot, updated = replaceupdated, lastvars = replacelastvars, protected = replaceprot}
 		local addedrot = 0
 		local reps = 0
+		local prevx, prevy = x, y
 		repeat
 			reps = reps + 1
 			if reps == 999999 then cells[cy][cx].ctype = 11 break end
+			prevx = cx
+			prevy = cy
 			if direction == 0 then
 				cx = cx + 1	
 			elseif direction == 2 then
@@ -175,6 +190,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 			elseif direction == 1 then
 				cy = cy + 1
 			end
+			modsOnMove(cells[cy][cx].ctype, cx, cy, cells[cy][cx].rot, direction)
 			if cx < 0 or cy < 0 then error(cx.." "..cy..":"..x.." "..y) end
 			if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true) or  cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
 				if storedcell.ctype ~= 0 then
@@ -184,7 +200,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					if isModdedTrash(cells[cy][cx].ctype) or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true) then
 						modsOnTrashEat(cells[cy][cx].ctype, cx, cy, storedcell, prevx, prevy)
 					end
-					canPushCell(cx, cy, prevx, prevy, "push")
+					canPushCell(cx, cy, prevx, prevy, "push", totalforce)
 					if cells[cy][cx].ctype == 50 then
 						if cx < width-1 and (not cells[cy][cx+1].protected and cells[cy][cx+1].ctype ~= -1 and cells[cy][cx+1].ctype ~= 11 and not isModdedTrash(cells[cy][cx+1].ctype) and cells[cy][cx+1].ctype ~= 40 and cells[cy][cx+1].ctype ~= 50) then cells[cy][cx+1].ctype = 0 end
 						if cx > 0 and (not cells[cy][cx-1].protected and cells[cy][cx-1].ctype ~= -1 and cells[cy][cx-1].ctype ~= 11 and not isModdedTrash(cells[cy][cx-1].ctype) and cells[cy][cx-1].ctype ~= 40 and cells[cy][cx-1].ctype ~= 50) then cells[cy][cx-1].ctype = 0 end
@@ -235,7 +251,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					local bombID = cells[cy][cx].ctype
 					cells[cy][cx].ctype = 0
 					if storedcell.ctype == 23 then cells[cy][cx].ctype = 12 end
-					canPushCell(cx, cy, prevx, prevy, "push")
+					canPushCell(cx, cy, prevx, prevy, "push", totalforce)
 					modsOnModEnemyDed(bombID, cx, cy, storedcell, prevx, prevy)
 					if not IsSilent(cells[cy][cx].ctype) then
 						love.audio.play(destroysound)
@@ -302,7 +318,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 					end
 					enemyparticles:setPosition(cx*20,cy*20)
 					enemyparticles:emit(50)
-					canPushCell(prevx, prevy, 0, 0, "push")
+					canPushCell(prevx, prevy, 0, 0, "push", totalforce)
 					break
 				else
 					storedcell.rot = (storedcell.rot + addedrot) % 4
@@ -328,7 +344,6 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				end
 			end
 			SetChunk(cx,cy,cells[cy][cx].ctype)
-			modsOnMove(cells[cy][cx].ctype, cx, cy, cells[cy][cx].rot)
 		until storedcell.ctype == 0
 	else
 		updatekey = updatekey + 1
@@ -531,7 +546,7 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 						cells[lastcy][lastcx].ctype = 0
 					end
 					break
-				elseif cells[cy][cx].ctype > initialCellCount and not canPushCell(cx, cy, lastcx, lastcy, "pull") then
+				elseif cells[cy][cx].ctype > initialCellCount and not canPushCell(cx, cy, lastcx, lastcy, "pull", totalforce) then
 					if reps ~= 1 then
 						cells[lastcy][lastcx].ctype = 0
 					end

@@ -11,7 +11,7 @@ function split(s, delimiter)
 end
 
 local hexstr = "0123456789ABCDEF"
-local cellkey = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&+-.=?^{}"
+local cellkey = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!$%&+*.=?^{}"
 
 function decodebase74(input)
   -- If negative activate cheat code.
