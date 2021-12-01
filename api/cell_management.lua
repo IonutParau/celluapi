@@ -20,7 +20,7 @@ local silent = {}
 local biases = {}
 
 function GiveBias(id, bias)
-  if cellTypes[id] == "mover" then error("Attempt to give a non-mover special bias") end
+  --if cellTypes[id] ~= "mover" then error("Attempt to give a non-mover special bias") end
   biases[id] = bias
 end
 
@@ -203,6 +203,7 @@ function addCell(label, texture, options)
   local updateindex = options.updateindex
   local static = options.static or false
   local silent = options.silent or false
+  local bias = options.bias or 1
 
   -- Epic cell
   if invisible == false then
@@ -221,6 +222,7 @@ function addCell(label, texture, options)
   end
   ctype = ctype or "normal"
   cellTypes[cellID] = ctype
+  GiveBias(cellID, bias)
   if ctype == "mover" then
     moddedMovers[cellID] = true
   elseif ctype == "enemy" then
