@@ -190,7 +190,6 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 			elseif direction == 1 then
 				cy = cy + 1
 			end
-			modsOnMove(cells[cy][cx].ctype, cx, cy, cells[cy][cx].rot, direction)
 			if cx < 0 or cy < 0 then error(cx.." "..cy..":"..x.." "..y) end
 			if cells[cy][cx].ctype == 11 or isModdedTrash(cells[cy][cx].ctype) or (GetSidedTrash(cells[cy][cx].ctype) ~= nil and GetSidedTrash(cells[cy][cx].ctype)(cx, cy, direction) == true) or  cells[cy][cx].ctype == 50 or cells[cy][cx].ctype == 43 and cells[cy][cx].rot == (direction+2)%4 then
 				if storedcell.ctype ~= 0 then
@@ -344,6 +343,7 @@ function PushCell(x,y,dir,updateforces,force,replacetype,replacerot,replaceupdat
 				end
 			end
 			SetChunk(cx,cy,cells[cy][cx].ctype)
+			modsOnMove(cells[cy][cx].ctype, cx, cy, cells[cy][cx].rot, direction, totalforce)
 		until storedcell.ctype == 0
 	else
 		updatekey = updatekey + 1
@@ -363,6 +363,9 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 	local cx = x
 	local cy = y
 	local blocked = false
+
+	local moved = {} -- For mods
+
 	if not ignoreblockage then
 		while true do
 			local prevx, prevy = cx, cy
@@ -635,20 +638,38 @@ function PullCell(x,y,dir,ignoreblockage,force,updateforces,dontpull,advancer)	-
 							cells[lastcy][lastcx] = CopyCell(cx,cy)
 							cells[lastcy][lastcx].rot = (cells[cy][cx].rot-addedrot)%4
 							if dontpull then cells[lastcy][lastcx].pulleddir = (direction-addedrot)%4 end
+							--modsOnMove(cells[lastcy][lastcx].ctype, lastcx, lastcy, cells[lastcy][lastcx].rot, direction, totalforce)
 						end
 					else
 						cells[lastcy][lastcx] = CopyCell(cx,cy)
 						cells[lastcy][lastcx].rot = (cells[cy][cx].rot-addedrot)%4
 						if dontpull then cells[lastcy][lastcx].pulleddir = (direction-addedrot)%4 end
+						--modsOnMove(cells[lastcy][lastcx].ctype, lastcx, lastcy, cells[lastcy][lastcx].rot, direction, totalforce)
 					end
 					addedrot = 0
 					SetChunk(lastcx,lastcy,cells[lastcy][lastcx].ctype)
+					table.insert(moved, lastcx)
+					table.insert(moved, lastcy)
+					table.insert(moved, direction)
+					table.insert(moved, totalforce)
+					table.insert(moved, cells[lastcy][lastcx].ctype)
+					table.insert(moved, cells[lastcy][lastcx].rot)
+					--modsOnMove(cells[cy][cx].ctype, cx, cy, cells[cy][cx].rot, direction, totalforce)
 					lastcx = cx
 					lastcy = cy
 				end
-				modsOnMove(cells[cy][cx].ctype, cx, cy, cells[cy][cx].rot)
 			until cells[cy][cx].ctype == 0
 			cells[cy][cx].testvar = "moveend"
+			for i=1,#moved, 6 do
+				-- This idea works...
+				local mcx = moved[i]
+				local mcy = moved[i+1]
+				local mcd = moved[i+2]
+				local mctf = moved[i+3]
+				local mctype = moved[i+4]
+				local mcrot = moved[i+5]
+				modsOnMove(mctype, mcx, mcy, mcrot, mcd, mctf)
+			end
 		else
 			updatekey = updatekey + 1
 			return false

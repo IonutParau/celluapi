@@ -35,6 +35,18 @@ function DirFromOff(ox, oy)
 	if oy > 0 then return 1 elseif oy < 0 then return 3 end
 end
 
+function OffFromDir(dir)
+	if dir == 0 then
+		return 1, 0
+	elseif dir == 2 then
+		return -1, 0
+	elseif dir == 1 then
+		return 0, 1
+	elseif dir == 3 then
+		return 0, -1
+	end
+end
+
 function CreateFormat(signature, encoding, decoding)
 	modsEncoding[signature] = encoding
 	modsDecoding[signature] = decoding
@@ -418,10 +430,10 @@ function modsOnClear()
 	end
 end
 
-function modsOnMove(id, x, y, dir, direction, pushData)
+function modsOnMove(id, x, y, dir, direction, force)
 	for _, mod in ipairs(modcache) do
 		if type(mod.onMove) == "function" then
-			mod.onMove(id, x, y, dir, direction, pushData)
+			mod.onMove(id, x, y, dir, direction, force)
 		end
 	end
 end
